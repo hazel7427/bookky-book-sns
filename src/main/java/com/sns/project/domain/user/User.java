@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User  {
 
   @Id
@@ -22,10 +23,9 @@ public class User  {
   private Long id;
 
 
-  @Column(unique = true)          // 로그인 ㅇㅏ이디
-  @JsonIgnore
+  @Column(unique = true)
+  private String email; // 이메일을 아이디로 사용
   private String password;
-
   private String name;
   private String company;
   private String profile_image_url;
