@@ -27,14 +27,10 @@ public class UserService {
       throw new RegisterFailedException("already used email");
     }
 
-    save(request);
-  }
-
-
-  @Transactional
-  public User save(RequestRegisterDto request) {
     User newUser = UserFactory.createUser(request);
     User registered = userRepository.save(newUser);
+
+
 
     // 사용자 데이터를 빠르게 가져오기 위해 캐싱
     // 키: 아이디(이메일), 값: 사용자 객체
@@ -42,6 +38,10 @@ public class UserService {
     // 키: 이름, 값: 아이디(이메일)
     redisService.putValueInHash(USER_CACHE_KEY, registered.getName(), registered.getEmail());
 
-    return registered;
+//    User u =  redisService.getValueFromHash(USER_CACHE_KEY, registered.getId().toString(), User.class);
+//    System.out.println(u);
   }
+
+
+
 }
