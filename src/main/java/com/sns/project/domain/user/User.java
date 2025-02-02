@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.util.List;
 import lombok.ToString.Exclude;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "users")
@@ -26,12 +27,19 @@ public class User  implements Serializable {
   private Long id;
 
 
-  @Column(unique = true)
+  @Column(unique = true, nullable = false)
+  @NotBlank(message = "이메일은 필수 입력값입니다")
   private String email; // 이메일을 아이디로 사용
+
   @JsonIgnore
+  @Column(nullable = false)
+  @NotBlank(message = "비밀번호는 필수 입력값입니다")
   private String password;
+
+  @Column(nullable = false)
+  @NotBlank(message = "이름은 필수 입력값입니다")
   private String name;
-  private String company;
+
   private String profile_image_url;
 
 
@@ -43,4 +51,7 @@ public class User  implements Serializable {
   @JsonIgnore
   private Set<Follow> followings;
 
+  public void setPassword(String password) {
+    this.password = password;
+  }
 }

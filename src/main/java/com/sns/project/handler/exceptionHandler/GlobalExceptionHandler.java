@@ -1,7 +1,8 @@
 package com.sns.project.handler.exceptionHandler;
 
 import com.sns.project.handler.exceptionHandler.exception.InvalidCredentialsException;
-import com.sns.project.handler.exceptionHandler.exception.NotFoundEmail;
+import com.sns.project.handler.exceptionHandler.exception.InvalidEmailTokenException;
+import com.sns.project.handler.exceptionHandler.exception.NotFoundEmailException;
 import com.sns.project.handler.exceptionHandler.exception.RegisterFailedException;
 import com.sns.project.handler.exceptionHandler.exception.TokenExpiredException;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
@@ -19,7 +20,10 @@ public class GlobalExceptionHandler {
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   private ResponseEntity<ApiResult<?>> newResponse(Throwable throwable, HttpStatus httpStatus) {
-    logger.error("Exception handled: {}, Status: {}", throwable.getMessage(), httpStatus);
+    logger.error("Exception occurred - Type: {}, Message: {}, Status: {}", 
+        throwable.getClass().getSimpleName(), 
+        throwable.getMessage(), 
+        httpStatus);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
@@ -32,7 +36,8 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler({
-      InvalidCredentialsException.class, TokenExpiredException.class
+      InvalidCredentialsException.class, TokenExpiredException.class,
+      InvalidEmailTokenException.class
   })
   public ResponseEntity<ApiResult<?>> handleInvalidCredentials(InvalidCredentialsException ex) {
     return newResponse(ex, HttpStatus.UNAUTHORIZED);
@@ -41,7 +46,7 @@ public class GlobalExceptionHandler {
 
 
   @ExceptionHandler({
-      NotFoundEmail.class
+      NotFoundEmailException.class
   })
   public ResponseEntity<ApiResult<?>> handleNotFoundException(RuntimeException ex) {
     return newResponse(ex, HttpStatus.NOT_FOUND);
