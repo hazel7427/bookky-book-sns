@@ -25,6 +25,8 @@ public class GlobalExceptionHandler {
         throwable.getMessage(), 
         httpStatus);
 
+    throwable.printStackTrace();
+
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
     return new ResponseEntity<>(ApiResult.error(throwable, httpStatus), headers, httpStatus);

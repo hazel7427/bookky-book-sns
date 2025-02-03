@@ -52,25 +52,28 @@ public class RedisService {
 
 
   /*
-   * 리스트에 값 추가하기
+   * 큐에 값 추가하기
    * 
-   * @param key 리스트 키
+   * @param key 큐 키
    * @param value 추가할 값
    */
-  public void pushToList(String key, Object value) {
+  public void pushToQueue(String key, Object value) {
     redisTemplate.opsForList().rightPush(key, value);
   }
 
   /*
-   * 리스트에서 값 가져오기
+   * 큐에서 값 가져오기
    * 
-   * @param key 리스트 키
+   * @param key 큐 키
    * @param clazz 반환할 클래스 타입
-   * @return 리스트에서 가져온 값
+   * @return 큐에서 가져온 값
    */
-  public <T> T popFromList(String key, Class<T> clazz) {
+  public <T> T popFromQueue(String key, Class<T> clazz) {
     Object value = redisTemplate.opsForList().leftPop(key);
-    return value != null ? clazz.cast(value) : null;
+    if (value == null) {
+        return null;
+    }
+    return objectMapper.convertValue(value, clazz);
   }
 
   /*

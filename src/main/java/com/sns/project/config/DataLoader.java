@@ -12,7 +12,7 @@ public class DataLoader implements CommandLineRunner {
   private final UserService userService;
 
   public void run(String... args) {
-    saveUser("1@gmail.com");
+    saveUser("homeyoyyya@gmail.com");
     saveUser("2@gmail.com");
     saveUser("3@gmail.com");
   }

@@ -17,13 +17,11 @@ public class RedisConfig {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setConnectionFactory(connectionFactory);
 
-    // Use String serializer for keys
-    template.setKeySerializer(new StringRedisSerializer());
-    template.setHashKeySerializer(new StringRedisSerializer());
-
-    // Use JSON serializer for values
     Jackson2JsonRedisSerializer<Object> jsonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+    template.setKeySerializer(new StringRedisSerializer());
     template.setValueSerializer(jsonSerializer);
+
+    template.setHashKeySerializer(new StringRedisSerializer());
     template.setHashValueSerializer(jsonSerializer);
 
     template.afterPropertiesSet();

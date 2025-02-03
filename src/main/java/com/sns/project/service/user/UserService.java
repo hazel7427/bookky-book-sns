@@ -1,7 +1,9 @@
 package com.sns.project.service.user;
 
-import static com.sns.project.config.Constants.PASSWORD_RESET_TOKEN_KEY;
-import static com.sns.project.config.Constants.USER_CACHE_KEY;
+
+import static com.sns.project.config.constants.Constants.PASSWORD_RESET_TOKEN_KEY;
+import static com.sns.project.config.constants.RedisConstants.MAIL_QUEUE_KEY;
+import static com.sns.project.config.constants.RedisConstants.USER_CACHE_KEY;
 
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
@@ -10,6 +12,7 @@ import com.sns.project.handler.exceptionHandler.exception.NotFoundEmailException
 import com.sns.project.handler.exceptionHandler.exception.RegisterFailedException;
 import com.sns.project.repository.UserRepository;
 import com.sns.project.service.RedisService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +45,6 @@ public class UserService {
   @Value("${app.domain.url}")
   private String domainUrl;
   private final JwtTokenProvider jwtTokenProvider;
-
   
   // 비밀번호 재설정 링크 생성
   private String getBody(String resetPasswordLink) {
@@ -113,16 +115,14 @@ public class UserService {
     String key = PASSWORD_RESET_TOKEN_KEY + token;
     log.info("key: {}", key);
     redisService.setValueWithExpiration(key,  email, 30 * 60);
-        
-    // 메일 작업을 Redis 큐에 추가
-    MailTask mailTask = new MailTask(
-        email,
-        "requset password reset",
-        getBody(resetLink),
-        token
-    );
 
-//    redisService.pushToList(MAIL_QUEUE_KEY, mailTask);
+    MailTask mailTask = MailTask.builder()
+        .email(email)
+        .content(getBody(resetLink))
+        .subject("비밀번호를 재설정하세요")
+        .build();
+
+    redisService.pushToQueue(MAIL_QUEUE_KEY, mailTask);
     log.info("Password reset mail task queued for: {}", email);
   }
 
