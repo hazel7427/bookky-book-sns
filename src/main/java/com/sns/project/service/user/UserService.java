@@ -36,6 +36,9 @@ import com.sns.project.handler.exceptionHandler.exception.InvalidCredentialsExce
 @Slf4j
 public class UserService {
 
+  private static final int PASSWORD_RESET_EXPIRATION_MINUTES = 30;
+  private static final String RESET_PASSWORD_PATH = "/reset-password?token=";
+
   private final UserRepository userRepository;
   private final RedisService redisService;
   @Value("classpath:templates/email/password-reset.html")
@@ -58,12 +61,16 @@ public class UserService {
     validateEmail(request.getEmail());
     
     User newUser = UserFactory.createUser(request);
-    newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt()));
+    newUser.setPassword(hashPassword(newUser.getPassword()));
     
     User registered = saveAndCache(newUser);
     
-    log.info("User registered successfully: {}", registered.getEmail());
+    log.info("사용자 등록 성공: {}", registered.getEmail());
     return registered;
+  }
+
+  private String hashPassword(String rawPassword) {
+    return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
   }
 
   private void validateEmail(String email) {
@@ -88,10 +95,13 @@ public class UserService {
   private void cacheUserData(User user) {
     try {
       redisService.putValueInHash(USER_CACHE_KEY, user.getEmail(), user);
-//      redisService.putValueInHash(USER_CACHE_KEY, user.getName(), user.getEmail());
     } catch (Exception e) {
-      log.error("Failed to cache user data: {}", e.getMessage());
+      log.error("사용자 데이터 캐싱 실패. 사용자: {}, 에러: {}", user.getEmail(), e.getMessage());
     }
+  }
+
+  private String createPasswordResetKey(String token) {
+    return PASSWORD_RESET_TOKEN_KEY + token;
   }
 
   /*
@@ -105,25 +115,33 @@ public class UserService {
    */
   @Transactional
   public void requestPasswordReset(String email) {
-    userRepository.findByEmail(email)
-        .orElseThrow(() -> new NotFoundEmailException(email));
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> {
+            log.error("비밀번호 재설정 요청 실패: 존재하지 않는 이메일 - {}", email);
+            return new NotFoundEmailException(email);
+        });
     
     String token = UUID.randomUUID().toString();
-    // 서버에서 해당 페이지를 렌더링할지 아님 클라이언트에서 렌더링할지 모르것다
-    String resetLink = domainUrl + "/reset-password?token=" + token;
-        
-    String key = PASSWORD_RESET_TOKEN_KEY + token;
-    log.info("key: {}", key);
-    redisService.setValueWithExpiration(key,  email, 30 * 60);
+    String resetLink = domainUrl + RESET_PASSWORD_PATH + token;
+    String passwordResetHashKey = createPasswordResetKey(token);
+    
+    try {
+      redisService.setValueWithExpiration(passwordResetHashKey, email, PASSWORD_RESET_EXPIRATION_MINUTES * 60);
+      
+      MailTask mailTask = MailTask.builder()
+          .email(email)
+          .content(getBody(resetLink))
+          .subject("비밀번호를 재설정하세요")
+          .build();
 
-    MailTask mailTask = MailTask.builder()
-        .email(email)
-        .content(getBody(resetLink))
-        .subject("비밀번호를 재설정하세요")
-        .build();
-
-    redisService.pushToQueue(MAIL_QUEUE_KEY, mailTask);
-    log.info("Password reset mail task queued for: {}", email);
+      redisService.pushToQueue(MAIL_QUEUE_KEY, mailTask);
+      log.info("비밀번호 재설정 메일 큐 추가 완료: {}", email);
+      log.info("passwordResetHashKey : {}", passwordResetHashKey);
+      
+    } catch (Exception e) {
+      log.error("비밀번호 재설정 처리 중 오류 발생. 이메일: {}, 에러: {}", email, e.getMessage());
+      throw new RuntimeException("비밀번호 재설정 처리 중 오류가 발생했습니다", e);
+    }
   }
 
   /*
@@ -132,11 +150,12 @@ public class UserService {
    * @param newPassword 새로운 비밀번호
    */
   @Transactional
-  public void resetPassword(String key, String newPassword) {
-    String email = redisService.getValue( key , String.class)
+  public void resetPassword(String token, String newPassword) {
+    String passwordResetHashKey = createPasswordResetKey(token);
+    String email = redisService.getValue(passwordResetHashKey, String.class)
         .orElseThrow(() -> {
-            log.error("invalid key : {}", key);
-            return new InvalidEmailTokenException(key);
+            log.error("invalid token : {}", token);
+            return new InvalidEmailTokenException(token);
         });
 
     User user = userRepository.findByEmail(email)
@@ -147,7 +166,7 @@ public class UserService {
 
 
     userRepository.save(user);
-//    redisService.deleteValue(key);
+    redisService.deleteValue(passwordResetHashKey);
   }
 
   @Transactional

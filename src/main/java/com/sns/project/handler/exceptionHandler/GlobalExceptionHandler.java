@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         throwable.getMessage(), 
         httpStatus);
 
-    throwable.printStackTrace();
+//    throwable.printStackTrace();
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
@@ -61,6 +61,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResult<?>> handleGeneralException(Exception ex) {
+    ex.printStackTrace();
     return newResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
