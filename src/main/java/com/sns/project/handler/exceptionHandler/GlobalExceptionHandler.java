@@ -1,10 +1,10 @@
 package com.sns.project.handler.exceptionHandler;
 
-import com.sns.project.handler.exceptionHandler.exception.InvalidCredentialsException;
-import com.sns.project.handler.exceptionHandler.exception.InvalidEmailTokenException;
-import com.sns.project.handler.exceptionHandler.exception.NotFoundEmailException;
-import com.sns.project.handler.exceptionHandler.exception.RegisterFailedException;
-import com.sns.project.handler.exceptionHandler.exception.TokenExpiredException;
+import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
+import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
+import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
+import com.sns.project.handler.exceptionHandler.exception.unauthorized.TokenExpiredException;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,27 +32,44 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(ApiResult.error(throwable, httpStatus), headers, httpStatus);
   }
 
+  /*
+   * HttpStatus.BAD_REQUEST (400)
+   * 잘못된 요청
+   */
   @ExceptionHandler(RegisterFailedException.class)
   public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
     return newResponse(ex, HttpStatus.BAD_REQUEST);
   }
 
+
+  /*
+   * HttpStatus.UNAUTHORIZED (401)
+   * 인증 실패
+   */
   @ExceptionHandler({
-      InvalidCredentialsException.class, TokenExpiredException.class,
+      InvalidPasswordException.class, TokenExpiredException.class,
       InvalidEmailTokenException.class
   })
-  public ResponseEntity<ApiResult<?>> handleInvalidCredentials(InvalidCredentialsException ex) {
+  public ResponseEntity<ApiResult<?>> handleInvalidCredentials(RuntimeException ex) {
     return newResponse(ex, HttpStatus.UNAUTHORIZED);
   }
 
 
-
+  /*
+   * HttpStatus.NOT_FOUND (404)
+   * 찾을 수 없음
+   */
   @ExceptionHandler({
       NotFoundEmailException.class
   })
   public ResponseEntity<ApiResult<?>> handleNotFoundException(RuntimeException ex) {
     return newResponse(ex, HttpStatus.NOT_FOUND);
   }
+
+  // @ExceptionHandler(EmailNotSentException.class)
+  // public ResponseEntity<ApiResult<?>> handleEmailNotSentException(EmailNotSentException ex) {
+  //   return newResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+  // }
 
   /**
    * 일반적인 예외 처리

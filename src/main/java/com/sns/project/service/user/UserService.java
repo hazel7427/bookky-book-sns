@@ -8,8 +8,8 @@ import static com.sns.project.config.constants.RedisConstants.USER_CACHE_KEY;
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
 import com.sns.project.dto.user.request.RequestRegisterDto;
-import com.sns.project.handler.exceptionHandler.exception.NotFoundEmailException;
-import com.sns.project.handler.exceptionHandler.exception.RegisterFailedException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
+import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
 import com.sns.project.repository.UserRepository;
 import com.sns.project.service.RedisService;
 
@@ -26,9 +26,9 @@ import org.thymeleaf.context.Context;
 import java.util.UUID;
 import com.sns.project.dto.mail.MailTask;
 import org.mindrot.jbcrypt.BCrypt;
-import com.sns.project.handler.exceptionHandler.exception.InvalidEmailTokenException;
+import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
 import com.sns.project.config.JwtTokenProvider;
-import com.sns.project.handler.exceptionHandler.exception.InvalidCredentialsException;
+import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
 
 
 @Service
@@ -125,23 +125,16 @@ public class UserService {
     String resetLink = domainUrl + RESET_PASSWORD_PATH + token;
     String passwordResetHashKey = createPasswordResetKey(token);
     
-    try {
-      redisService.setValueWithExpiration(passwordResetHashKey, email, PASSWORD_RESET_EXPIRATION_MINUTES * 60);
-      
-      MailTask mailTask = MailTask.builder()
-          .email(email)
-          .content(getBody(resetLink))
-          .subject("비밀번호를 재설정하세요")
-          .build();
+    redisService.setValueWithExpiration(passwordResetHashKey, email, PASSWORD_RESET_EXPIRATION_MINUTES * 60);
+    
+    MailTask mailTask = MailTask.builder()
+        .email(email)
+        .content(getBody(resetLink))
+        .subject("비밀번호를 재설정하세요")
+        .build();
 
-      redisService.pushToQueue(MAIL_QUEUE_KEY, mailTask);
-      log.info("비밀번호 재설정 메일 큐 추가 완료: {}", email);
-      log.info("passwordResetHashKey : {}", passwordResetHashKey);
-      
-    } catch (Exception e) {
-      log.error("비밀번호 재설정 처리 중 오류 발생. 이메일: {}, 에러: {}", email, e.getMessage());
-      throw new RuntimeException("비밀번호 재설정 처리 중 오류가 발생했습니다", e);
-    }
+    redisService.pushToQueue(MAIL_QUEUE_KEY, mailTask);
+    log.info("비밀번호 재설정 메일 큐 추가 완료: {}", email);
   }
 
   /*
@@ -177,7 +170,7 @@ public class UserService {
     log.info("DB 저장된 해시: {}", user.getPassword());
 
     if (!BCrypt.checkpw(password, user.getPassword())) {
-      throw new InvalidCredentialsException();
+      throw new InvalidPasswordException();
     }
 
     return jwtTokenProvider.generateToken(user.getEmail());

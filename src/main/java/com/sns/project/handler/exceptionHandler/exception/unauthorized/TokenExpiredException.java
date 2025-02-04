@@ -1,4 +1,4 @@
-package com.sns.project.handler.exceptionHandler.exception;
+package com.sns.project.handler.exceptionHandler.exception.unauthorized;
 
 public class TokenExpiredException extends
     RuntimeException {

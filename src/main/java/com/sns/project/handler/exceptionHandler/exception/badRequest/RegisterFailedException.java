@@ -1,4 +1,4 @@
-package com.sns.project.handler.exceptionHandler.exception;
+package com.sns.project.handler.exceptionHandler.exception.badRequest;
 
 
 public class RegisterFailedException extends RuntimeException {
