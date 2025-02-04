@@ -115,7 +115,7 @@ public class UserService {
    */
   @Transactional
   public void requestPasswordReset(String email) {
-    User user = userRepository.findByEmail(email)
+    userRepository.findByEmail(email)
         .orElseThrow(() -> {
             log.error("비밀번호 재설정 요청 실패: 존재하지 않는 이메일 - {}", email);
             return new NotFoundEmailException(email);

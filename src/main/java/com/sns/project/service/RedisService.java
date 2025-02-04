@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,6 +73,16 @@ public class RedisService {
     Object value = redisTemplate.opsForList().leftPop(key);
     if (value == null) {
         return null;
+    }
+    return objectMapper.convertValue(value, clazz);
+
+  }
+
+
+  public <T> T popFromQueueBlocking(String key, Class<T> clazz) {
+    Object value = redisTemplate.opsForList().leftPop(key, Duration.ofSeconds(0));
+    if (value == null) {
+      return null;
     }
     return objectMapper.convertValue(value, clazz);
   }
