@@ -1,10 +1,5 @@
 package com.sns.project.service.user;
 
-
-import static com.sns.project.config.constants.Constants.PASSWORD_RESET_TOKEN_KEY;
-import static com.sns.project.config.constants.RedisConstants.MAIL_QUEUE_KEY;
-import static com.sns.project.config.constants.RedisConstants.USER_CACHE_KEY;
-
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
 import com.sns.project.dto.user.request.RequestRegisterDto;
@@ -29,15 +24,12 @@ import org.mindrot.jbcrypt.BCrypt;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
 import com.sns.project.config.JwtTokenProvider;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
-
+import static com.sns.project.config.constants.Constants.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
-  private static final int PASSWORD_RESET_EXPIRATION_MINUTES = 30;
-  private static final String RESET_PASSWORD_PATH = "/reset-password?token=";
 
   private final UserRepository userRepository;
   private final RedisService redisService;
@@ -89,19 +81,19 @@ public class UserService {
   /*
    * 사용자 데이터 캐싱
    * 해시 키: USER_CACHE_KEY, 
-   * (필드 키, 필드 값): (email, user), (name, email)
+   * (필드 키, 필드 값): (email, user)
    * @param user 사용자 데이터
    */
   private void cacheUserData(User user) {
     try {
-      redisService.putValueInHash(USER_CACHE_KEY, user.getEmail(), user);
+      redisService.putValueInHash(UserConstants.USER_CACHE_KEY, user.getEmail(), user);
     } catch (Exception e) {
       log.error("사용자 데이터 캐싱 실패. 사용자: {}, 에러: {}", user.getEmail(), e.getMessage());
     }
   }
 
   private String createPasswordResetKey(String token) {
-    return PASSWORD_RESET_TOKEN_KEY + token;
+    return PasswordResetConstants.RESET_TOKEN_KEY + token;
   }
 
   /*
@@ -122,10 +114,10 @@ public class UserService {
         });
     
     String token = UUID.randomUUID().toString();
-    String resetLink = domainUrl + RESET_PASSWORD_PATH + token;
+    String resetLink = domainUrl + PasswordResetConstants.RESET_PATH + token;
     String passwordResetHashKey = createPasswordResetKey(token);
     
-    redisService.setValueWithExpiration(passwordResetHashKey, email, PASSWORD_RESET_EXPIRATION_MINUTES * 60);
+    redisService.setValueWithExpiration(passwordResetHashKey, email, PasswordResetConstants.RESET_EXPIRATION_MINUTES * 60);
     
     MailTask mailTask = MailTask.builder()
         .email(email)
@@ -133,7 +125,7 @@ public class UserService {
         .subject("비밀번호를 재설정하세요")
         .build();
 
-    redisService.pushToQueue(MAIL_QUEUE_KEY, mailTask);
+    redisService.pushToQueue(PasswordResetConstants.MAIL_QUEUE_KEY, mailTask);
     log.info("비밀번호 재설정 메일 큐 추가 완료: {}", email);
   }
 
@@ -166,14 +158,18 @@ public class UserService {
   public String authenticate(String email, String password) {
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new NotFoundEmailException(email));
-        
-    log.info("DB 저장된 해시: {}", user.getPassword());
-
+    
     if (!BCrypt.checkpw(password, user.getPassword())) {
-      throw new InvalidPasswordException();
+        throw new InvalidPasswordException();
     }
 
-    return jwtTokenProvider.generateToken(user.getEmail());
+    return saveAuthToken(user.getId());
+  }
+
+  String saveAuthToken(Long id) {
+    String token = jwtTokenProvider.generateToken(String.valueOf(id));
+    redisService.setValueWithExpiration(token, String.valueOf(id), AuthConstants.CACHE_DURATION_MINUTES * 60);
+    return token;
   }
 
 }

@@ -5,6 +5,7 @@ import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEm
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
 import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.TokenExpiredException;
+import com.sns.project.handler.exceptionHandler.exception.unauthorized.UnauthorizedException;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({
       InvalidPasswordException.class, TokenExpiredException.class,
-      InvalidEmailTokenException.class
+      InvalidEmailTokenException.class, UnauthorizedException.class
   })
   public ResponseEntity<ApiResult<?>> handleInvalidCredentials(RuntimeException ex) {
     return newResponse(ex, HttpStatus.UNAUTHORIZED);

@@ -47,3 +47,8 @@ springdoc:
     operationsSorter: method  # API 문서에서 HTTP 메서드 정렬
     tagsSorter: alpha  # API 태그 알파벳 정렬
     display-request-duration: true  # 요청 처리 시간 표시
+
+gcs:
+  bucket-name:  sns-bucket02
+  credentials:
+    file-path: ${GOOGLE_APPLICATION_CREDENTIALS}

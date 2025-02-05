@@ -58,6 +58,20 @@ dependencies {
 
 	// Swagger 3 (OpenAPI)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// goggle cloud storage
+	implementation 'com.google.cloud:google-cloud-storage:2.24.0'
+
+	// guava version
+	implementation 'com.google.guava:guava:32.1.2-jre'
+
+}
+
+configurations.all {
+	resolutionStrategy {
+		force 'com.google.guava:guava:32.1.2-jre'
+		exclude group: 'com.google.guava', module: 'listenablefuture'
+	}
 }
 
 tasks.named('test') {
