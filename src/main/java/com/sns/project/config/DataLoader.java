@@ -27,7 +27,9 @@ public class DataLoader implements CommandLineRunner {
     requestRegisterDto.setPassword("1234");
     requestRegisterDto.setName("test");
     userService.register(requestRegisterDto);
-//    userService.authenticate(email,"1234");
+    
+    String token = "testToken";
+    redisService.setValueWithExpiration(token, String.valueOf(1L), 10000*60);
   }
 }
 

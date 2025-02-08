@@ -1,23 +1,32 @@
 package com.sns.project.controller;
 
 import com.sns.project.aspect.userAuth.AuthRequired;
-import com.sns.project.dto.post.RequestPostDto;
-import com.sns.project.dto.post.RequestPostUpdateDto;
+import com.sns.project.dto.post.request.RequestPostUpdateDto;
+import com.sns.project.dto.post.response.ResponsePostDto;
+import com.sns.project.handler.exceptionHandler.response.ApiResult;
+
 import com.sns.project.service.post.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.ArrayList;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 @Tag(name = "게시물 API", description = "게시물 CRUD API")
+@SecurityRequirement(name = "Bearer Authentication")
 public class PostController {
 
   private final PostService postService;
@@ -27,41 +36,33 @@ public class PostController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "게시물 생성 성공"),
       @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+      @ApiResponse(responseCode = "401", description = "인증 실패"),
       @ApiResponse(responseCode = "500", description = "서버 오류")
   })
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @AuthRequired
-  public ResponseEntity<String> createPost(
-          @RequestBody @Parameter(description = "게시물 생성 정보") RequestPostDto requestPostDto) {
-    // postService.createPost(requestPostDto);
-    return ResponseEntity.ok("게시물이 성공적으로 생성되었습니다.");
+  @SecurityRequirement(name = "Bearer Authentication")
+  public ApiResult<ResponsePostDto> createPost(
+          @RequestPart("title") @NotNull(message = "제목은 필수입니다") String title,
+          @RequestPart("content") @NotNull(message = "내용은 필수입니다") String content,
+          @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+
+    Long postId = postService.createPost(title, content, images);
+    return ApiResult.success(new ResponsePostDto(postId));
   }
 
-  @Operation(summary = "게시물 수정", description = "기존 게시물을 수정합니다.")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "게시물 수정 성공"),
-      @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-      @ApiResponse(responseCode = "404", description = "게시물을 찾을 수 없음"),
-      @ApiResponse(responseCode = "500", description = "서버 오류")
-  })
-  @PutMapping("/{postId}")
-  public ResponseEntity<String> updatePost(
-          @PathVariable @Parameter(description = "게시물 ID") Long postId,
-          @RequestBody @Parameter(description = "게시물 수정 정보") RequestPostUpdateDto requestPostUpdateDto) {
-    // postService.updatePost(postId, requestPostUpdateDto);
-    return ResponseEntity.ok("게시물이 성공적으로 수정되었습니다.");
-  }
-
-  @Operation(summary = "게시물 삭제", description = "게시물을 삭제합니다.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "게시물 삭제 성공"),
       @ApiResponse(responseCode = "404", description = "게시물을 찾을 수 없음"),
-      @ApiResponse(responseCode = "500", description = "서버 오류")
+      @ApiResponse(responseCode = "500", description = "서버 오류"),
+      @ApiResponse(responseCode = "401", description = "인증 실패")
   })
   @DeleteMapping("/{postId}")
-  public ResponseEntity<String> deletePost(
+  @AuthRequired
+  @SecurityRequirement(name = "Bearer Authentication")
+  public ApiResult<String> deletePost(
           @PathVariable @Parameter(description = "게시물 ID") Long postId) {
     // postService.deletePost(postId);
-    return ResponseEntity.ok("게시물이 성공적으로 삭제되었습니다.");
+    return ApiResult.success("게시물이 성공적으로 삭제되었습니다.");
   }
 }

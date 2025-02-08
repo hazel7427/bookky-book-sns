@@ -4,6 +4,7 @@ import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
 import com.sns.project.dto.user.request.RequestRegisterDto;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundUserException;
 import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
 import com.sns.project.repository.UserRepository;
 import com.sns.project.service.RedisService;
@@ -166,10 +167,15 @@ public class UserService {
     return saveAuthToken(user.getId());
   }
 
-  String saveAuthToken(Long id) {
+  public String saveAuthToken(Long id) {
     String token = jwtTokenProvider.generateToken(String.valueOf(id));
     redisService.setValueWithExpiration(token, String.valueOf(id), AuthConstants.CACHE_DURATION_MINUTES * 60);
     return token;
+  }
+
+  public User getUserById(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundUserException(userId));
   }
 
 }

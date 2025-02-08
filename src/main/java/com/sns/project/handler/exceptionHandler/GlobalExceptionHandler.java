@@ -1,5 +1,7 @@
 package com.sns.project.handler.exceptionHandler;
 
+import com.sns.project.handler.exceptionHandler.exception.badRequest.InvalidFormatRequestException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundUserException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
@@ -37,7 +39,9 @@ public class GlobalExceptionHandler {
    * HttpStatus.BAD_REQUEST (400)
    * 잘못된 요청
    */
-  @ExceptionHandler(RegisterFailedException.class)
+  @ExceptionHandler({
+      RegisterFailedException.class, InvalidFormatRequestException.class
+  })
   public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
     return newResponse(ex, HttpStatus.BAD_REQUEST);
   }
@@ -61,7 +65,7 @@ public class GlobalExceptionHandler {
    * 찾을 수 없음
    */
   @ExceptionHandler({
-      NotFoundEmailException.class
+      NotFoundEmailException.class, NotFoundUserException.class
   })
   public ResponseEntity<ApiResult<?>> handleNotFoundException(RuntimeException ex) {
     return newResponse(ex, HttpStatus.NOT_FOUND);

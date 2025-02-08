@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,9 +41,10 @@ public class Post {
   private User user;
 
   @Column(nullable = false)
-  private String content;
+  private String title;
 
-  private String image_url;
+  @Column(nullable = false)
+  private String content;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Comment> comments = new ArrayList<>(); // 댓글 목록
@@ -50,7 +53,7 @@ public class Post {
   private List<PostLike> likes = new ArrayList<>(); // 좋아요 목록
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-  private List<PostImage> images = new ArrayList<>(); // 게시물에 포함된 이미지
+  private List<PostImageInfo> images = new ArrayList<>(); // 게시물에 포함된 이미지
 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
