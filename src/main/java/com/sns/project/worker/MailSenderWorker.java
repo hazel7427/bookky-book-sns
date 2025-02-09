@@ -36,14 +36,14 @@ public class MailSenderWorker {
                     sendEmail(task);
                 }
             } catch (QueryTimeoutException | RedisConnectionException e) {
-                log.error("Redis 연결 오류: {}", e.getMessage());
+//                log.error("Redis 연결 오류: {}", e.getMessage());
                 try {
-                    log.info("Redis 재연결 시도 중...");
+//                    log.info("Redis 재연결 시도 중...");
                     Thread.sleep(10000); // 10초 대기
                     continue; // while 루프 계속 실행
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
-                    log.warn("Redis 재연결 대기 중 인터럽트 발생");
+//                    log.warn("Redis 재연결 대기 중 인터럽트 발생");
                     continue; // 인터럽트 발생해도 계속 실행
                 }
             } catch (Exception e) {

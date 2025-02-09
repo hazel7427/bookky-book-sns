@@ -1,6 +1,7 @@
 package com.sns.project.controller;
 
 import com.sns.project.aspect.userAuth.AuthRequired;
+import com.sns.project.dto.notification.RequestNotificationDto;
 import com.sns.project.dto.post.request.RequestPostUpdateDto;
 import com.sns.project.dto.post.response.ResponsePostDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
@@ -9,6 +10,7 @@ import com.sns.project.service.post.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -30,6 +32,8 @@ import jakarta.validation.constraints.NotNull;
 public class PostController {
 
   private final PostService postService;
+
+
 
 
   @Operation(summary = "게시물 생성", description = "새로운 게시물을 생성합니다.")
