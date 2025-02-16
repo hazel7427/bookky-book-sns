@@ -3,6 +3,7 @@ package com.sns.project.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sns.project.domain.follow.Follow;
+import com.sns.project.domain.notification.Notification;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -50,6 +51,10 @@ public class User  implements Serializable {
   @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
   @JsonIgnore
   private Set<Follow> followings;
+
+
+  @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Notification> receivedNotifications;
 
   public void setPassword(String password) {
     this.password = password;

@@ -178,4 +178,9 @@ public class UserService {
         .orElseThrow(() -> new NotFoundUserException(userId));
   }
 
+  public void isExistUser(Long userId) {
+    userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundUserException(userId));
+  }
+
 }

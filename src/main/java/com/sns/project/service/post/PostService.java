@@ -1,5 +1,6 @@
 package com.sns.project.service.post;
 
+import com.sns.project.service.NotificationService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,6 @@ import com.sns.project.domain.user.User;
 import org.springframework.web.multipart.MultipartFile;
 import com.sns.project.service.user.UserService;
 import org.springframework.context.ApplicationEventPublisher;
-import com.sns.project.event.notification.NotificationEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +33,8 @@ public class PostService {
   private final PostImageInfoRepository postImageInfoRepository;
   private final UserService userService;
   private final ExecutorService executorService;
-  private final ApplicationEventPublisher eventPublisher;
-  
+  private final NotificationService notificationService;
+
   public Long createPost(String title, String content, List<MultipartFile> images) {
     User user = userService.getUserById(UserContext.getUserId());
     Post post = createPostEntity(title, content, user);
@@ -44,9 +44,8 @@ public class PostService {
       images.forEach(image -> processSingleImageAsync(image, post));
     }
 
-    // Trigger notification event
-    eventPublisher.publishEvent(new NotificationEvent(user.getId(), "A new post has been created."));
 
+    notificationService.sendNotification("새로운 게시물이 등록되었습니다", user.getId(), List.of(1L, 2L, 3L));
     return savedPost.getId();
   }
 

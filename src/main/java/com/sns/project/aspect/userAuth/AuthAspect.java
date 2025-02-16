@@ -7,13 +7,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.sns.project.service.RedisService;
-import com.sns.project.handler.exceptionHandler.exception.unauthorized.UnauthorizedException;
-
-import java.util.Optional;
+import com.sns.project.service.user.TokenService;
 
 @Aspect
 @Component
@@ -21,30 +19,14 @@ import java.util.Optional;
 @Slf4j
 public class AuthAspect {
 
-    private final RedisService redisService;
+    private final TokenService tokenService;
 
     @Around("@annotation(com.sns.project.aspect.userAuth.AuthRequired)")
     public Object validateToken(ProceedingJoinPoint joinPoint) throws Throwable {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            throw new UnauthorizedException("Invalid request context");
-        }
-
-        String authHeader = attributes.getRequest().getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new UnauthorizedException("토큰이 필요합니다.");
-        }
-
-        String token = authHeader.substring(7);
-        log.info("token :{}", token);
-
-        Optional<Long> userIdOpt = redisService.getValue(token, Long.class);
-        if (userIdOpt.isEmpty()) {
-            throw new UnauthorizedException("Invalid or expired token");
-        }
-
-        log.info("userId: {}", userIdOpt.get());
-        UserContext.setUserId(userIdOpt.get());
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Long userId = tokenService.extractAndValidateToken(requestAttributes);
+        log.info("userId: {}", userId);
+        UserContext.setUserId(userId);
         
         try {
             return joinPoint.proceed();

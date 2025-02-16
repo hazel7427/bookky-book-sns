@@ -17,4 +17,8 @@ public class Constants {
     public static class UserConstants {
         public static final String USER_CACHE_KEY = "userCacheKey";
     }
+
+    public static class NotificationConstants {
+        public static final String NOTIFICATION_QUEUE_KEY = "notification:queue";
+    }
 }

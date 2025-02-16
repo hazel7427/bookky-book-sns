@@ -1,5 +1,5 @@
 
-package com.sns.project.dto.notification;
+package com.sns.project.dto.notification.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

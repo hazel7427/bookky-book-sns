@@ -1,7 +1,6 @@
 package com.sns.project.controller;
 
 import com.sns.project.aspect.userAuth.AuthRequired;
-import com.sns.project.dto.notification.RequestNotificationDto;
 import com.sns.project.dto.post.request.RequestPostUpdateDto;
 import com.sns.project.dto.post.response.ResponsePostDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
