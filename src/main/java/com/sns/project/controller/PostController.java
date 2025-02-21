@@ -1,6 +1,7 @@
 package com.sns.project.controller;
 
 import com.sns.project.aspect.userAuth.AuthRequired;
+import com.sns.project.aspect.userAuth.UserContext;
 import com.sns.project.dto.post.request.RequestPostUpdateDto;
 import com.sns.project.dto.post.response.ResponsePostDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
@@ -22,6 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.ArrayList;
 import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -45,13 +49,14 @@ public class PostController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @AuthRequired
   @SecurityRequirement(name = "Bearer Authentication")
-  public ApiResult<ResponsePostDto> createPost(
+  public ApiResult<Long> createPost(
           @RequestPart("title") @NotNull(message = "제목은 필수입니다") String title,
           @RequestPart("content") @NotNull(message = "내용은 필수입니다") String content,
           @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-    Long postId = postService.createPost(title, content, images);
-    return ApiResult.success(new ResponsePostDto(postId));
+    Long userId = UserContext.getUserId();
+    Long postId = postService.createPost(title, content, images, userId);
+    return ApiResult.success(postId);
   }
 
   @ApiResponses({
@@ -68,4 +73,22 @@ public class PostController {
     // postService.deletePost(postId);
     return ApiResult.success("게시물이 성공적으로 삭제되었습니다.");
   }
+
+  @Operation(summary = "게시물 조회", description = "특정 게시물을 조회합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "게시물 조회 성공", 
+          content = @Content(mediaType = "application/json", 
+          schema = @Schema(implementation = ResponsePostDto.class))),
+      @ApiResponse(responseCode = "404", description = "게시물을 찾을 수 없음"),
+      @ApiResponse(responseCode = "500", description = "서버 오류"),
+  })
+  @AuthRequired
+  @SecurityRequirement(name = "Bearer Authentication")
+  @GetMapping("/{postId}")
+  public ApiResult<ResponsePostDto> getPost(@PathVariable @Parameter(description = "게시물 ID") Long postId) {
+    ResponsePostDto res = new ResponsePostDto(postService.getPostById(postId));
+    return ApiResult.success(res);
+  }
+
+
 }

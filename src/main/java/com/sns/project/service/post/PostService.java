@@ -17,6 +17,8 @@ import com.sns.project.aspect.userAuth.UserContext;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostImageInfo;
 import com.sns.project.domain.user.User;
+import com.sns.project.dto.post.response.ResponsePostDto;
+
 import org.springframework.web.multipart.MultipartFile;
 import com.sns.project.service.user.UserService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,8 +37,9 @@ public class PostService {
   private final ExecutorService executorService;
   private final NotificationService notificationService;
 
-  public Long createPost(String title, String content, List<MultipartFile> images) {
-    User user = userService.getUserById(UserContext.getUserId());
+  public Long createPost(String title, String content, 
+           List<MultipartFile> images, Long userId) {
+    User user = userService.getUserById(userId);
     Post post = createPostEntity(title, content, user);
     Post savedPost = postRepository.save(post);
 
@@ -91,6 +94,12 @@ public class PostService {
       return CompletableFuture.completedFuture(null);
     }
   }
+
+public Post getPostById(Long postId) {
+    Post post = postRepository.findById(postId)
+    .orElseThrow(() -> new RuntimeException("Post not found"));
+    return post;
+}
 }
 
 

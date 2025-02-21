@@ -29,7 +29,7 @@ public class TokenService {
         String token = authHeader.substring(7);
         Optional<Long> userIdOpt = getUserId(token);
         if (userIdOpt.isEmpty()) {
-            throw new UnauthorizedException("Invalid or expired token");
+            throw new UnauthorizedException(token+":Invalid or expired token");
         }
 
         return userIdOpt.get();

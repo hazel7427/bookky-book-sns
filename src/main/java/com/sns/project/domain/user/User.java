@@ -23,6 +23,10 @@ import jakarta.validation.constraints.NotBlank;
 @Builder
 public class User  implements Serializable {
 
+  public User(Long id) {
+    this.id = id;
+  }
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

@@ -5,6 +5,7 @@ import com.sns.project.dto.user.request.LoginRequestDto;
 import com.sns.project.dto.user.request.RequestPasswordResetDto;
 import com.sns.project.dto.user.request.ResetPasswordDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
+import com.sns.project.service.user.TokenService;
 import com.sns.project.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +24,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
+  private final TokenService tokenService;
   private final UserService userService;
-
   @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "회원가입 성공"),
@@ -77,5 +78,17 @@ public class UserController {
                                        @RequestBody ResetPasswordDto request) {
     userService.resetPassword(token, request.getNewPassword());
     return ApiResult.success("비밀번호가 성공적으로 재설정되었습니다.");
+  }
+
+  @Operation(summary = "토큰 유효성 검사", description = "유저의 토큰이 올바른지 확인합니다")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "토큰이 유효함"),
+    @ApiResponse(responseCode = "401", description = "토큰이 유효하지 않음")
+  })
+  @PostMapping("/validate-token")
+  public ApiResult<Boolean> validateToken(@RequestParam String token) {
+    boolean isValid = tokenService.isValidToken(token);
+    System.out.println(isValid + " 토큰 유효성 검사" + token);
+    return ApiResult.success(isValid);
   }
 }

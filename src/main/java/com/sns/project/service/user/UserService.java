@@ -1,5 +1,6 @@
 package com.sns.project.service.user;
 
+import com.sns.project.domain.post.Post;
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
 import com.sns.project.dto.user.request.RequestRegisterDto;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.springframework.core.io.Resource;
 import org.thymeleaf.context.Context;
+
+import java.util.Optional;
 import java.util.UUID;
 import com.sns.project.dto.mail.MailTask;
 import org.mindrot.jbcrypt.BCrypt;
@@ -178,9 +181,12 @@ public class UserService {
         .orElseThrow(() -> new NotFoundUserException(userId));
   }
 
-  public void isExistUser(Long userId) {
-    userRepository.findById(userId)
-        .orElseThrow(() -> new NotFoundUserException(userId));
+  public boolean isExistUser(Long userId) {
+    return userRepository.existsById(userId);
   }
+
+
+
+
 
 }

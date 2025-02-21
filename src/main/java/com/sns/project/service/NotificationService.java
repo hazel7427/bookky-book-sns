@@ -8,7 +8,7 @@ import com.sns.project.dto.notification.request.RequestNotificationDto;
 import com.sns.project.dto.notification.response.ResponseNotificationDto;
 import com.sns.project.dto.notification.response.ResponseNotificationListDto;
 import com.sns.project.dto.notification.workerDto.RawNotificationDto;
-import com.sns.project.handler.exceptionHandler.exception.notfound.NotificationNotFoundException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundNotificationException;
 import com.sns.project.repository.NotificationContentRepository;
 import com.sns.project.repository.NotificationRepository;
 import com.sns.project.service.user.UserService;
@@ -81,6 +81,6 @@ public class NotificationService {
 
     private Notification findNotification(Long notificationId, User receiver) {
         return notificationRepository.findByIdAndReceiver(notificationId, receiver)
-                .orElseThrow(() -> new NotificationNotFoundException(notificationId));
+                .orElseThrow(() -> new NotFoundNotificationException(notificationId));
     }
 }

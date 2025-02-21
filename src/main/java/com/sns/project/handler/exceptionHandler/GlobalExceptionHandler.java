@@ -4,7 +4,9 @@ import com.sns.project.handler.exceptionHandler.exception.badRequest.InvalidForm
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundUserException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundCommentException;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundNotificationException;
 import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.TokenExpiredException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.UnauthorizedException;
@@ -65,16 +67,12 @@ public class GlobalExceptionHandler {
    * 찾을 수 없음
    */
   @ExceptionHandler({
-      NotFoundEmailException.class, NotFoundUserException.class
+      NotFoundEmailException.class, NotFoundUserException.class,
+      NotFoundCommentException.class, NotFoundNotificationException.class
   })
   public ResponseEntity<ApiResult<?>> handleNotFoundException(RuntimeException ex) {
     return newResponse(ex, HttpStatus.NOT_FOUND);
   }
-
-  // @ExceptionHandler(EmailNotSentException.class)
-  // public ResponseEntity<ApiResult<?>> handleEmailNotSentException(EmailNotSentException ex) {
-  //   return newResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
-  // }
 
   /**
    * 일반적인 예외 처리

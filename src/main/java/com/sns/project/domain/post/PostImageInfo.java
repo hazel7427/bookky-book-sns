@@ -5,6 +5,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class PostImageInfo {
 
   @Id
