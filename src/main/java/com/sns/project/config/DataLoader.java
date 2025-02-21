@@ -1,56 +1,120 @@
 package com.sns.project.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.sns.project.dto.comment.CommentRequestDto;
+import com.sns.project.dto.comment.CommentResponseDto;
 import com.sns.project.dto.user.request.RequestRegisterDto;
 import com.sns.project.service.NotificationService;
 import com.sns.project.service.RedisService;
+import com.sns.project.service.comment.CommentService;
+import com.sns.project.service.following.FollowingService;
+import com.sns.project.service.post.PostService;
 import com.sns.project.service.user.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
-  private final UserService userService;
-  private final RedisService redisService;
-  private final NotificationService notificationService;
-  
-    public void run(String... args) {
-      saveUser("homeyoyyya@gmail.com");
-      saveUser("2@gmail.com");
-      saveUser("3@gmail.com");
+    private final UserService userService;
+    private final RedisService redisService;
+    private final NotificationService notificationService;
+    private final PostService postService;
+    private final CommentService commentService;
+    private final FollowingService followingService;
     
-      saveUserToken(1L, "testToken1");
-      saveUserToken(2L, "testToken2");
-      saveUserToken(3L, "testToken3");
+    @Override
+    public void run(String... args) {
+        initializeUsers();
+        initializeUserTokens();
+        saveNotifications();
+        savePostsAndComments();
+        follow();
+    }
 
-      saveNotification();
+    private void initializeUsers() {
+        List<String> emails = List.of("homeyoyyya@gmail.com", "2@gmail.com", "3@gmail.com", "4@gmail.com");
+        emails.forEach(this::saveUser);
     }
-  
+
+    private void initializeUserTokens() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        List<String> tokens = List.of("testToken1", "testToken2", "testToken3");
+        for (int i = 0; i < userIds.size(); i++) {
+            saveUserToken(userIds.get(i), tokens.get(i));
+        }
+    }
+
     private void saveUserToken(Long userId, String token) {
-      redisService.setValueWithExpiration(token, String.valueOf(userId), 10000*60);
+        redisService.setValueWithExpiration(token, String.valueOf(userId), 10000 * 60);
     }
-  
+
     private void saveUser(String email) {
-      RequestRegisterDto requestRegisterDto = new RequestRegisterDto();
-      requestRegisterDto.setEmail(email);
-      requestRegisterDto.setPassword("1234");
-      requestRegisterDto.setName("test");
-      userService.register(requestRegisterDto);
-      
+        RequestRegisterDto requestRegisterDto = createRegisterDto(email);
+        userService.register(requestRegisterDto);
     }
-  
-    /*
-    알림 저장
-    송신자: 유저3
-    수신자: 유저1, 유저2
-     */
-    private void saveNotification() {
-      for (int i = 0; i < 30; i++) {
-        notificationService.sendNotification("test notification"+i, 3L, List.of(1L, 2L));
-      }
-  }
+
+    private RequestRegisterDto createRegisterDto(String email) {
+        RequestRegisterDto dto = new RequestRegisterDto();
+        dto.setEmail(email);
+        dto.setPassword("1234");
+        dto.setName("test");
+        return dto;
+    }
+
+    private void saveNotifications() {
+        Long senderId = 3L;
+        List<Long> receiverIds = List.of(1L, 2L);
+        for (int i = 0; i < 30; i++) {
+            notificationService.sendNotification("test notification" + i, senderId, receiverIds);
+        }
+    }
+
+    private void savePostsAndComments() {
+        List<MultipartFile> images = new ArrayList<>();
+        createPosts(images);
+        createComments();
+    }
+
+    private void createPosts(List<MultipartFile> images) {
+        for (int i = 0; i < 10; i++) {
+            postService.createPost("title" + i, "content" + i, images, 1L);
+        }
+    }
+
+    private void createComments() {
+        for (int i = 0; i < 5; i++) {
+            CommentResponseDto parent = commentService.createComment(new CommentRequestDto(1L, "content" + i), 1L);
+            createReplies(parent.getId());
+        }
+    }
+
+    private void createReplies(Long parentId) {
+        for (int j = 0; j < 2; j++) {
+            commentService.createReply(parentId, "reply content" + j, 1L);
+        }
+    }
+
+    private void follow() {
+        // 3번 유저 팔로워 1, 2, 4 (3명)
+        // 4번 유저가 3번 유저를 팔로우
+        followingService.followUser(4L, 3L);
+        // 1번 유저가 3번 유저를 팔로우
+        followingService.followUser(1L, 3L);
+        // 2번 유저가 3번 유저를 팔로우
+        followingService.followUser(2L, 3L);
+
+
+        // 1번 유저 팔로워 2, 3 ,4 (3명)
+        followingService.followUser(2L, 1L);
+        followingService.followUser(3L, 1L);
+        followingService.followUser(4L, 1L);
+        
+    }
 }
 

@@ -14,7 +14,16 @@ import lombok.*;
 }) // 데이터 베이스에 동일한 팔로잉, 팔로워 관계 생기지 않도록 한다
 public class Follow {
 
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+
+
+public Follow(User follower, User following) {
+    this.follower = follower;
+    this.following = following;
+}
+
+
+@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
 
