@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import com.sns.project.domain.follow.Follow;
 import com.sns.project.domain.user.User;
 import com.sns.project.dto.following.FollowingsResponse;
@@ -13,11 +12,11 @@ import com.sns.project.dto.following.FollowUserResponse;
 import com.sns.project.dto.following.FollowersResponse;
 import com.sns.project.service.user.UserService;
 import com.sns.project.repository.FollowRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,6 @@ public class FollowingService {
     private final UserService userService;
     private final FollowRepository followRepository;
 
-
     @Transactional
     public void unfollowUser(Long followerId, Long followingId) {
         User follower = userService.getUserById(followerId);
@@ -38,33 +36,29 @@ public class FollowingService {
             followRepository.deleteByFollowerAndFollowing(follower, following);
             logger.info("User {} unfollowed user {}", followerId, followingId);
         } else {
-            logAndThrowWarning("unfollow", followerId, followingId);
+            throw new IllegalArgumentException(String.format("Follow relationship does not exist: User %d -> User %d", followerId, followingId));
         }
     }
 
     @Transactional
     public void followUser(Long followerId, Long followingId) {
-        if(followerId.equals(followingId)){
+        if (followerId.equals(followingId)) {
             throw new IllegalArgumentException("User cannot follow themselves");
         }
         User follower = userService.getUserById(followerId);
         User following = userService.getUserById(followingId);
 
-        if (!followRepository.existsByFollowerAndFollowing(follower, following)) {
-            Follow follow = new Follow(follower, following);
-            followRepository.save(follow);
-            logger.info("User {} followed user {}", followerId, followingId);
-        } else {
-            logAndThrowWarning("follow", followerId, followingId);
+        try {
+            if (!followRepository.existsByFollowerAndFollowing(follower, following)) {
+                followRepository.save(new Follow(follower, following));
+                logger.info("User {} followed user {}", followerId, followingId);
+            } else {
+                logger.warn("Attempt to follow an existing relationship: User {} -> User {}", followerId, followingId);
+                throw new IllegalArgumentException("Follow relationship already exists");
+            }
+        } catch (DataIntegrityViolationException e) {
+            logger.warn("Concurrent follow request detected for User {} -> User {}", followerId, followingId);
         }
-    }
-
- 
-
-    private void logAndThrowWarning(String action, Long followerId, Long followingId) {
-        String message = String.format("Attempt to %s an existing relationship: User %d -> User %d", action, followerId, followingId);
-        logger.warn(message);
-        throw new IllegalArgumentException("Follow relationship " + (action.equals("follow") ? "already exists" : "does not exist"));
     }
 
     public FollowingsResponse getAllFollowings(Long userId, int page, int size) {

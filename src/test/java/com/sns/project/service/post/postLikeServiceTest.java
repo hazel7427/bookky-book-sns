@@ -4,7 +4,6 @@ import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostLike;
 import com.sns.project.domain.user.User;
 import com.sns.project.repository.PostLikeRepository;
-import com.sns.project.service.post.PostService;
 import com.sns.project.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

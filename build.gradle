@@ -76,6 +76,27 @@ configurations.all {
 	}
 }
 
+
+// QueryDSL 추가 설정
+def generatedDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
+
+tasks.withType(JavaCompile).configureEach {
+	options.annotationProcessorGeneratedSourcesDirectory = file(generatedDir)
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs += generatedDir
+		}
+	}
+}
+
+clean {
+	delete file(generatedDir)
+}
+
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

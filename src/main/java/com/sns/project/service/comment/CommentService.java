@@ -62,7 +62,7 @@ public class CommentService {
                 .content(content)
                 .parent(parentComment)
                 .build();
-                
+
         commentRepository.save(reply);
 
         return new CommentResponseDto(reply);
@@ -92,6 +92,10 @@ public class CommentService {
             throw new UnauthorizedException("You are not authorized to delete this comment");
         }
 
-        commentRepository.delete(comment);
+        if (comment.getReplies().isEmpty()) {
+            comment.makeDeleted();
+        } else {
+            commentRepository.delete(comment);
+        }
     }
 }

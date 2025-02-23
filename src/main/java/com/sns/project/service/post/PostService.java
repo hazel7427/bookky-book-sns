@@ -13,15 +13,13 @@ import java.util.concurrent.ExecutorService;
 
 import com.sns.project.repository.PostRepository;
 import com.sns.project.repository.PostImageInfoRepository;
-import com.sns.project.aspect.userAuth.UserContext;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostImageInfo;
 import com.sns.project.domain.user.User;
-import com.sns.project.dto.post.response.ResponsePostDto;
+import com.sns.project.dto.post.response.PostSummeryResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 import com.sns.project.service.user.UserService;
-import org.springframework.context.ApplicationEventPublisher;
 
 @Service
 @RequiredArgsConstructor
@@ -99,6 +97,16 @@ public Post getPostById(Long postId) {
     Post post = postRepository.findById(postId)
     .orElseThrow(() -> new RuntimeException("Post not found"));
     return post;
+}
+
+public List<PostSummeryResponse> getPopularPostsFromFollowing(Long userId) {
+    User user = userService.getUserById(userId);
+    return  null;
+}
+
+public List<PostSummeryResponse> getLatestPostsFromFollowing(Long userId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getLatestPostsFromFollowing'");
 }
 }
 

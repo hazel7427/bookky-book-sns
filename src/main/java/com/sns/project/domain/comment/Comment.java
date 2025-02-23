@@ -65,5 +65,9 @@ public class Comment {
   protected void onUpdate() {
       updatedAt = LocalDateTime.now();
   }
+
+public void makeDeleted() {
+    this.content = "삭제된 댓글입니다.";
+}
 }
 

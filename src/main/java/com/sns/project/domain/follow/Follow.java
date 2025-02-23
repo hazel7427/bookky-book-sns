@@ -3,6 +3,7 @@ package com.sns.project.domain.follow;
 
 import com.sns.project.domain.user.User;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Entity
@@ -15,15 +16,14 @@ import lombok.*;
 public class Follow {
 
 
-
-
-public Follow(User follower, User following) {
+  public Follow(User follower, User following) {
     this.follower = follower;
     this.following = following;
-}
+  }
 
 
-@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
 
@@ -36,6 +36,13 @@ public Follow(User follower, User following) {
   @JoinColumn(name = "following_id", nullable = false)
   private User follower;
 
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+    updatedAt = LocalDateTime.now();
 
+  }
 }

@@ -19,10 +19,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     // List<User> findAllByFollowerId(Long userId);
 
-    @Query("SELECT f FROM Follow f WHERE f.follower.id = :followerId")
+    @Query("SELECT f FROM Follow f WHERE f.follower.id = :followerId ORDER BY f.createdAt DESC")
     Page<Follow> findAllByFollowerId(@Param("followerId") Long followerId, Pageable pageable);
 
-    @Query("SELECT f FROM Follow f WHERE f.following.id = :followingId")
+    @Query("SELECT f FROM Follow f WHERE f.following.id = :followingId ORDER BY f.createdAt DESC")
     Page<Follow> findAllByFollowingId(@Param("followingId") Long followingId, Pageable pageable);
 
     boolean existsByFollowerAndFollowing(User follower, User following);
