@@ -50,9 +50,11 @@ public class Post {
   private List<Comment> comments = new ArrayList<>(); // 댓글 목록
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
   private List<PostLike> likes = new ArrayList<>(); // 좋아요 목록
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @Builder.Default
   private List<PostImageInfo> images = new ArrayList<>(); // 게시물에 포함된 이미지
 
   private LocalDateTime createdAt;

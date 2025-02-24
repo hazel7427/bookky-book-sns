@@ -3,7 +3,7 @@ package com.sns.project.service.post;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostLike;
 import com.sns.project.domain.user.User;
-import com.sns.project.repository.PostLikeRepository;
+import com.sns.project.repository.post.PostLikeRepository;
 import com.sns.project.service.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

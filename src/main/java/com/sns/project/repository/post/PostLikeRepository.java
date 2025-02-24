@@ -1,4 +1,4 @@
-package com.sns.project.repository;
+package com.sns.project.repository.post;
 
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostLike;

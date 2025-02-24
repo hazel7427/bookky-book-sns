@@ -1,7 +1,6 @@
 package com.sns.project.worker.notification;
 
 import com.sns.project.service.NotificationCrudService;
-import com.sns.project.service.NotificationService;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -12,8 +11,7 @@ import com.sns.project.domain.notification.Notification;
 import com.sns.project.domain.user.User;
 import com.sns.project.dto.notification.response.ResponseNotificationDto;
 import com.sns.project.dto.notification.workerDto.BatchProcessedNotificationDto;
-import com.sns.project.dto.notification.workerDto.RawNotificationDto;
-import com.sns.project.repository.NotificationRepository;
+import com.sns.project.repository.notification.NotificationRepository;
 import com.sns.project.service.RedisService;
 
 import lombok.RequiredArgsConstructor;

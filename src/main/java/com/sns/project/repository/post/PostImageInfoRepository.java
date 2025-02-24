@@ -1,4 +1,4 @@
-package com.sns.project.repository;
+package com.sns.project.repository.post;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

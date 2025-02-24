@@ -8,7 +8,7 @@ import com.sns.project.dto.comment.CommentResponseDto;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundCommentException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.UnauthorizedException;
 import com.sns.project.repository.CommentRepository;
-import com.sns.project.repository.PostRepository;
+import com.sns.project.repository.post.PostRepository;
 import com.sns.project.repository.UserRepository;
 import com.sns.project.service.user.UserService;
 import lombok.RequiredArgsConstructor;

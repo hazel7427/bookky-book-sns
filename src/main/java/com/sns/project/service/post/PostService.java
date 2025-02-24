@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import com.sns.project.repository.PostRepository;
-import com.sns.project.repository.PostImageInfoRepository;
+import com.sns.project.repository.post.PostRepository;
+import com.sns.project.repository.post.PostImageInfoRepository;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostImageInfo;
 import com.sns.project.domain.user.User;

@@ -1,4 +1,4 @@
-package com.sns.project.repository;
+package com.sns.project.repository.notification;
 
 import com.sns.project.domain.notification.Notification;
 import com.sns.project.domain.user.User;
