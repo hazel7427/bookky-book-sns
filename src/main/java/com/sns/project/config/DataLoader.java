@@ -2,6 +2,7 @@ package com.sns.project.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.sns.project.dto.comment.CommentRequestDto;
 import com.sns.project.dto.comment.CommentResponseDto;
@@ -27,13 +28,17 @@ public class DataLoader implements CommandLineRunner {
     private final PostService postService;
     private final CommentService commentService;
     private final FollowingService followingService;
+    private final Random random = new Random();
     
     @Override
     public void run(String... args) {
         initializeUsers();
         initializeUserTokens();
         saveNotifications();
-        savePostsAndComments();
+        savePosts(1L);
+        savePosts(2L);
+        savePosts(3L);
+        savePosts(4L);
         follow();
     }
 
@@ -75,21 +80,26 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
-    private void savePostsAndComments() {
+    private void savePosts(Long userId) {
         List<MultipartFile> images = new ArrayList<>();
-        createPosts(images);
-        createComments();
+        createPosts(images, userId);
     }
 
-    private void createPosts(List<MultipartFile> images) {
+    private void createPosts(List<MultipartFile> images, Long userId) {
         for (int i = 0; i < 10; i++) {
-            postService.createPost("title" + i, "content" + i, images, 1L);
+            Long postId = postService.createPost("title" + i, "content" + i, images, userId);
+            for(int j = 0; j < random.nextInt(5); j++) {
+                createComments(postId);
+            }
+            // for(int j = 0; j < random.nextInt(5); j++) {
+                // likePost(postId, userId);
+            // }
         }
     }
 
-    private void createComments() {
+    private void createComments(Long postId) {
         for (int i = 0; i < 5; i++) {
-            CommentResponseDto parent = commentService.createComment(new CommentRequestDto(1L, "content" + i), 1L);
+            CommentResponseDto parent = commentService.createComment(new CommentRequestDto(postId, "content" + i), 1L);
             createReplies(parent.getId());
         }
     }
@@ -100,15 +110,17 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
+    /*
+     * 1번 유저의 팔로잉 : 2, 3, 4,
+     * 2번 유저의 팔로잉 : 1,
+     * 3번 유저의 팔로잉 : 1,
+     * 4번 유저의 팔로잉 : 1,
+     */
     private void follow() {
-        // 3번 유저 팔로워 1, 2, 4 (3명)
-        // 4번 유저가 3번 유저를 팔로우
-        followingService.followUser(4L, 3L);
-        // 1번 유저가 3번 유저를 팔로우
+        // 1번 유저가 2, 3, 4번 유저를 팔로우
+        followingService.followUser(1L, 2L);
         followingService.followUser(1L, 3L);
-        // 2번 유저가 3번 유저를 팔로우
-        followingService.followUser(2L, 3L);
-
+        followingService.followUser(1L, 4L);
 
         // 1번 유저 팔로워 2, 3 ,4 (3명)
         followingService.followUser(2L, 1L);

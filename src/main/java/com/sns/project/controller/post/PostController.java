@@ -2,27 +2,26 @@ package com.sns.project.controller.post;
 
 import com.sns.project.aspect.userAuth.AuthRequired;
 import com.sns.project.aspect.userAuth.UserContext;
-import com.sns.project.dto.post.request.RequestPostUpdateDto;
-import com.sns.project.dto.post.response.PostSummeryResponse;
+import com.sns.project.dto.post.response.PostsResponse;
 import com.sns.project.dto.post.response.ResponsePostDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
-
+import com.sns.project.dto.post.response.PostSummaryDto;
 import com.sns.project.service.post.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.ArrayList;
 import jakarta.validation.constraints.NotNull;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -101,10 +100,12 @@ public class PostController {
   @AuthRequired
   @SecurityRequirement(name = "Bearer Authentication")
   @GetMapping("/following/popular")
-  public ApiResult<List<PostSummeryResponse>> getPopularPostsFromFollowing() {
+  public ApiResult<PostsResponse> getPopularPostsFromFollowing(
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
     Long userId = UserContext.getUserId();
-    List<PostSummeryResponse> posts = postService.getPopularPostsFromFollowing(userId);
-    return ApiResult.success(posts);
+    Page<PostSummaryDto> res = postService.getPopularPostsFromFollowing(userId, page, size);
+    return ApiResult.success(new PostsResponse(res.getContent(), res.getTotalPages(), res.getTotalElements()));
   }
 
   @Operation(summary = "최신순 게시물 조회", description = "팔로잉하는 사람들의 게시물을 최신순으로 조회합니다.")
@@ -117,10 +118,12 @@ public class PostController {
   @AuthRequired
   @SecurityRequirement(name = "Bearer Authentication")
   @GetMapping("/following/latest")
-  public ApiResult<List<PostSummeryResponse>> getLatestPostsFromFollowing() {
+  public ApiResult<PostsResponse> getLatestPostsFromFollowing(
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
     Long userId = UserContext.getUserId();
-    List<PostSummeryResponse> posts = postService.getLatestPostsFromFollowing(userId);
-    return ApiResult.success(posts);
+    Page<PostSummaryDto> posts = postService.getLatestPostsFromFollowing(userId, page, size);
+    return ApiResult.success(new PostsResponse(posts.getContent(), posts.getTotalPages(), posts.getTotalElements()));
   }
 
 }

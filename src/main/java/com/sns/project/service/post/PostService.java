@@ -7,16 +7,19 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import com.sns.project.repository.post.PostRepository;
+import com.sns.project.dto.post.response.PostSummaryDto;
 import com.sns.project.repository.post.PostImageInfoRepository;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostImageInfo;
 import com.sns.project.domain.user.User;
-import com.sns.project.dto.post.response.PostSummeryResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 import com.sns.project.service.user.UserService;
@@ -99,15 +102,17 @@ public Post getPostById(Long postId) {
     return post;
 }
 
-public List<PostSummeryResponse> getPopularPostsFromFollowing(Long userId) {
-    User user = userService.getUserById(userId);
-    return  null;
+public Page<PostSummaryDto> getPopularPostsFromFollowing(Long userId, int page, int size) {
+    userService.isExistUser(userId);
+    Pageable pageable = PageRequest.of(page, size);
+    return postRepository.findFollowingPostsOrderedByPopularity(userId, pageable);
 }
 
-public List<PostSummeryResponse> getLatestPostsFromFollowing(Long userId) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getLatestPostsFromFollowing'");
-}
+public Page<PostSummaryDto> getLatestPostsFromFollowing(Long userId, int page, int size) {
+    userService.isExistUser(userId);
+    Pageable pageable = PageRequest.of(page, size);
+    return postRepository.findAllPostsByUser(userId, pageable);
 }
 
 
+}
