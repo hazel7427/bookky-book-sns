@@ -16,20 +16,15 @@ public class TokenService {
 
     private final RedisService redisService;
 
-    public Long extractAndValidateToken(ServletRequestAttributes requestAttributes) {
-        if (requestAttributes == null) {
-            throw new UnauthorizedException("Invalid request context");
-        }
+    public Long validateToken(String token) {
 
-        String authHeader = requestAttributes.getRequest().getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (token == null) {
             throw new UnauthorizedException("토큰이 필요합니다.");
         }
 
-        String token = authHeader.substring(7);
         Optional<Long> userIdOpt = getUserId(token);
         if (userIdOpt.isEmpty()) {
-            throw new UnauthorizedException(token+":Invalid or expired token");
+            throw new UnauthorizedException(token+" : 유효하지 않은 토큰입니다.");
         }
 
         return userIdOpt.get();
@@ -37,6 +32,9 @@ public class TokenService {
 
 
     public boolean isValidToken(String token) {
+        if (token == null) {
+            return false;
+        }
         Optional<Long> userIdOpt = getUserId(token);
         return userIdOpt.isPresent();
     }

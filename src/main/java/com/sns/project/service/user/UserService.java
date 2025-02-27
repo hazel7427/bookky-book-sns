@@ -21,7 +21,9 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.springframework.core.io.Resource;
 import org.thymeleaf.context.Context;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import com.sns.project.dto.mail.MailTask;
 import org.mindrot.jbcrypt.BCrypt;
@@ -183,6 +185,10 @@ public class UserService {
 
   public boolean isExistUser(Long userId) {
     return userRepository.existsById(userId);
+  }
+
+  public List<User> getUsersByIds(Set<Long> participantIds) {
+    return userRepository.findAllById(participantIds);
   }
 
 

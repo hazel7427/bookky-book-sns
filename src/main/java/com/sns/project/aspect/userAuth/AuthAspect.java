@@ -24,7 +24,9 @@ public class AuthAspect {
     @Around("@annotation(com.sns.project.aspect.userAuth.AuthRequired)")
     public Object validateToken(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        Long userId = tokenService.extractAndValidateToken(requestAttributes);
+        String authHeader = requestAttributes.getRequest().getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = tokenService.validateToken(token);
         log.info("userId: {}", userId);
         UserContext.setUserId(userId);
         
