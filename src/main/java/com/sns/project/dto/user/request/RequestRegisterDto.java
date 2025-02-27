@@ -19,4 +19,5 @@ public class RequestRegisterDto {
   private String name;
   private String password;
   private String profile_image;
+  private String userId;
 }

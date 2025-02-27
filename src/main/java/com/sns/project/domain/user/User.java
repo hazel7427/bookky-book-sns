@@ -47,6 +47,9 @@ public class User  implements Serializable {
 
   private String profile_image_url;
 
+  @Column(unique = true, nullable = false)
+  @NotBlank(message = "사용자 ID는 필수 입력값입니다")
+  private String userId;
 
   @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
   @JsonIgnore

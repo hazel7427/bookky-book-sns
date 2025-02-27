@@ -73,7 +73,12 @@ public class DataLoader implements CommandLineRunner {
             dto.setEmail(email);
             dto.setPassword("1234");
             dto.setName("test");
+            dto.setUserId(generateUserId(email));
             return dto;
+        }
+    
+        private String generateUserId(String email) {
+            return email.split("@")[0] + "_id";
         }
     
         private void saveNotifications() {

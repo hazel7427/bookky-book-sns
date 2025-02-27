@@ -30,6 +30,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
 import com.sns.project.config.JwtTokenProvider;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
+import org.webjars.NotFoundException;
+
 import static com.sns.project.config.constants.Constants.*;
 
 @Service
@@ -57,6 +59,7 @@ public class UserService {
   @Transactional
   public User register(RequestRegisterDto request) {
     validateEmail(request.getEmail());
+    validateUserId(request.getUserId());
     
     User newUser = UserFactory.createUser(request);
     newUser.setPassword(hashPassword(newUser.getPassword()));
@@ -75,6 +78,13 @@ public class UserService {
     if (userRepository.existsByEmail(email)) {
       log.warn("Registration failed: Email already exists - {}", email);
       throw new RegisterFailedException("이미 사용 중인 이메일입니다");
+    }
+  }
+
+  private void validateUserId(String userId) {
+    if (userRepository.existsByUserId(userId)) {
+        log.warn("Registration failed: User ID already exists - {}", userId);
+        throw new RegisterFailedException("이미 사용 중인 사용자 ID입니다");
     }
   }
 
@@ -161,9 +171,9 @@ public class UserService {
   }
 
   @Transactional
-  public String authenticate(String email, String password) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new NotFoundEmailException(email));
+  public String authenticate(String userId, String password) {
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new NotFoundException(userId+": 존재하지 않는 유저 아이디 입니다."));
     
     if (!BCrypt.checkpw(password, user.getPassword())) {
         throw new InvalidPasswordException();

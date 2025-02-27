@@ -37,14 +37,14 @@ public class UserController {
     return ApiResult.success("회원가입 성공 :" + request.getEmail());
   }
 
-  @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다")
+  @Operation(summary = "로그인", description = "사용자 ID와 비밀번호로 로그인합니다")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "로그인 성공"),
     @ApiResponse(responseCode = "401", description = "인증 실패")
   })
   @PostMapping("/login")
   public ApiResult<String> login(@RequestBody LoginRequestDto request) {
-    String token = userService.authenticate(request.getEmail(), request.getPassword());
+    String token = userService.authenticate(request.getUserId(), request.getPassword());
     return ApiResult.success(token);
   }
 
