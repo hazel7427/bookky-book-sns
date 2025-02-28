@@ -1,24 +1,37 @@
 package com.sns.project.config.constants;
 
 public class Constants {
-    public static class AuthConstants {
-        public static final String CACHE_KEY_PREFIX = "auth:";
-        // 바꿔야함 나중에 .. ..
-        public static final int CACHE_DURATION_MINUTES = 30000000;
+    public enum Auth {
+        CACHE_PREFIX("auth:");
+        
+        private final String key;
+        Auth(String key) { this.key = key; }
+        public String get() { return key; }
     }
 
-    public static class PasswordResetConstants {
-        public static final String MAIL_QUEUE_KEY = "mail:queue";
-        public static final String RESET_TOKEN_KEY = "passwordResetTokenKey";
-        public static final int RESET_EXPIRATION_MINUTES = 30;
-        public static final String RESET_PATH = "/reset-password?token=";
+    public enum PasswordReset {
+        MAIL_QUEUE("mail:queue"),
+        RESET_TOKEN("passwordResetTokenKey"),
+        RESET_PATH("/reset-password?token=");
+
+        private final String key;
+        PasswordReset(String key) { this.key = key; }
+        public String get() { return key; }
     }
 
-    public static class UserConstants {
-        public static final String USER_CACHE_KEY = "userCacheKey";
+    public enum User {
+        CACHE_KEY("userCacheKey");
+
+        private final String key;
+        User(String key) { this.key = key; }
+        public String get() { return key; }
     }
 
-    public static class NotificationConstants {
-        public static final String NOTIFICATION_QUEUE_KEY = "notification:queue";
+    public enum Notification {
+        QUEUE_KEY("notification:queue");
+
+        private final String key;
+        Notification(String key) { this.key = key; }
+        public String get() { return key; }
     }
 }

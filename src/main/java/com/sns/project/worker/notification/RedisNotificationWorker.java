@@ -1,11 +1,12 @@
 package com.sns.project.worker.notification;
 
+import com.sns.project.config.constants.Constants;
 import com.sns.project.service.NotificationCrudService;
 import java.util.List;
 
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Component;
 
-import com.sns.project.config.constants.Constants.NotificationConstants;
 import com.sns.project.domain.notification.NotificationContent;
 import com.sns.project.domain.notification.Notification;
 import com.sns.project.domain.user.User;
@@ -30,13 +31,14 @@ public class RedisNotificationWorker {
     private final SimpMessagingTemplate messagingTemplate; // ✅ Inject WebSocket Template
 
     public void enqueue(BatchProcessedNotificationDto batchDto) {
-        redisService.pushToQueue(NotificationConstants.NOTIFICATION_QUEUE_KEY, batchDto);
+        String key = Constants.Notification.QUEUE_KEY.get();
+        redisService.pushToQueue(key, batchDto);
     }
     public void processBatches() {
         while (true) {
             try {
                 BatchProcessedNotificationDto batchDto = redisService.popFromQueue(
-                        NotificationConstants.NOTIFICATION_QUEUE_KEY,
+                        Constants.Notification.QUEUE_KEY.get(),
                         BatchProcessedNotificationDto.class
                 );
 

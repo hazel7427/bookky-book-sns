@@ -1,5 +1,7 @@
 package com.sns.project.service.user;
 
+import com.sns.project.config.constants.AppConstants;
+import com.sns.project.config.constants.Constants;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
@@ -102,14 +104,14 @@ public class UserService {
    */
   private void cacheUserData(User user) {
     try {
-      redisService.putValueInHash(UserConstants.USER_CACHE_KEY, user.getEmail(), user);
+      redisService.putValueInHash(Constants.User.CACHE_KEY.get(), user.getEmail(), user);
     } catch (Exception e) {
       log.error("사용자 데이터 캐싱 실패. 사용자: {}, 에러: {}", user.getEmail(), e.getMessage());
     }
   }
 
   private String createPasswordResetKey(String token) {
-    return PasswordResetConstants.RESET_TOKEN_KEY + token;
+    return Constants.PasswordReset.RESET_TOKEN.get() + token;
   }
 
   /*
@@ -130,10 +132,12 @@ public class UserService {
         });
     
     String token = UUID.randomUUID().toString();
-    String resetLink = domainUrl + PasswordResetConstants.RESET_PATH + token;
+    String resetPath = PasswordReset.RESET_PATH.get();
+    String resetLink = domainUrl + resetPath + token;
     String passwordResetHashKey = createPasswordResetKey(token);
-    
-    redisService.setValueWithExpiration(passwordResetHashKey, email, PasswordResetConstants.RESET_EXPIRATION_MINUTES * 60);
+
+    int resetTokenExp = AppConstants.PasswordReset.EXPIRATION_MINUTES;
+    redisService.setValueWithExpiration(passwordResetHashKey, email,  resetTokenExp * 60);
     
     MailTask mailTask = MailTask.builder()
         .email(email)
@@ -141,7 +145,8 @@ public class UserService {
         .subject("비밀번호를 재설정하세요")
         .build();
 
-    redisService.pushToQueue(PasswordResetConstants.MAIL_QUEUE_KEY, mailTask);
+    String key = Constants.PasswordReset.MAIL_QUEUE.get();
+    redisService.pushToQueue(key, mailTask);
     log.info("비밀번호 재설정 메일 큐 추가 완료: {}", email);
   }
 
@@ -184,7 +189,8 @@ public class UserService {
 
   public String saveAuthToken(Long id) {
     String token = jwtTokenProvider.generateToken(String.valueOf(id));
-    redisService.setValueWithExpiration(token, String.valueOf(id), AuthConstants.CACHE_DURATION_MINUTES * 60);
+    int cacheDuration = AppConstants.Auth.CACHE_DURATION_MINUTES;
+    redisService.setValueWithExpiration(token, String.valueOf(id), cacheDuration * 60);
     return token;
   }
 
