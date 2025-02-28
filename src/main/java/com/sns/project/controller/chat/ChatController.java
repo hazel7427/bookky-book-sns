@@ -23,17 +23,21 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat/{roomId}/sendMessage")
-    public void sendMessage(@DestinationVariable Long roomId,
+    @MessageMapping("/sendMessage")
+    public void sendMessage(
         @Payload ChatMessageRequest chatMessageRequest, 
         StompHeaderAccessor headerAccessor) {
+        System.out.println("✅ [DEBUG] WebSocket 메시지 수신: " + chatMessageRequest.getMessage());
+
         Long senderId = (Long) headerAccessor.getSessionAttributes().get("userId");
 
         if (senderId == null) {
             throw new UnauthorizedException("User not authenticated in WebSocket session");
         }
 
+        Long roomId = chatMessageRequest.getRoomId();
         ChatMessageResponse response = chatService.saveMessage(senderId, chatMessageRequest.getMessage(), roomId);
+        System.out.println(response);
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
     }
     

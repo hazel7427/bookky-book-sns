@@ -1,18 +1,26 @@
 package com.sns.project.dto.chat.response;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.sns.project.domain.chat.ChatMessage;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class ChatMessageResponse {
     private Long id;
     private String message;
-    private LocalDateTime sentAt;
+    private String sentAt;
+    private Long senderId;
+    private String senderName;
 
     public ChatMessageResponse(ChatMessage chatMessage) {
         this.id = chatMessage.getId();
+        this.message = chatMessage.getMessage();
+        this.sentAt = chatMessage.getSentAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.senderId = chatMessage.getSender().getId();
+        this.senderName = chatMessage.getSender().getName();
     }
 }

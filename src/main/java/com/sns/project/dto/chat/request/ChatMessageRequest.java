@@ -7,6 +7,9 @@ import lombok.ToString;
 @Data
 @ToString
 public class ChatMessageRequest {
-    @NotBlank(message = "Message cannot be empty")  // Ensures message is not null or empty
+    @NotBlank(message = "Message cannot be empty")
     private String message;
+
+    @NotBlank(message = "roomId cant be empty")
+    private Long roomId;
 }

@@ -1,5 +1,8 @@
 package com.sns.project.service.chat;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.sns.project.domain.chat.ChatMessage;
@@ -29,7 +32,12 @@ public class ChatService {
 
         ChatMessage chatMessage = new ChatMessage(chatRoom, sender, message);
         chatMessageRepository.save(chatMessage);
-
+        System.out.println("message is saved");
         return new ChatMessageResponse(chatMessage);
+    }
+
+    public List<ChatMessageResponse> getChatHistory(Long roomId) {
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomId(roomId);
+        return messages.stream().map(ChatMessageResponse::new).collect(Collectors.toList());
     }
 }
