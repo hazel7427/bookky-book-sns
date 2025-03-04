@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import com.sns.project.repository.post.PostRepository;
-import com.sns.project.dto.post.response.PostSummaryDto;
+import com.sns.project.controller.post.post.response.PostSummaryDto;
 import com.sns.project.repository.post.PostImageInfoRepository;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.PostImageInfo;

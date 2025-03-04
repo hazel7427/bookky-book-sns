@@ -1,30 +1,11 @@
 package com.sns.project.service.comment;
 
-import com.sns.project.domain.comment.Comment;
-import com.sns.project.domain.post.Post;
-import com.sns.project.domain.user.User;
-import com.sns.project.dto.comment.CommentRequestDto;
-import com.sns.project.dto.comment.CommentResponseDto;
-import com.sns.project.repository.CommentRepository;
-import com.sns.project.repository.UserRepository;
-import com.sns.project.repository.post.PostRepository;
-import com.sns.project.service.user.UserService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {

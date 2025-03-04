@@ -18,7 +18,7 @@ import com.sns.project.repository.chat.ChatRoomRepository;
 import com.sns.project.service.RedisService;
 import com.sns.project.service.user.UserService;
 import com.sns.project.domain.user.User;
-import com.sns.project.dto.chat.response.ChatRoomResponse;
+import com.sns.project.controller.chat.dto.response.ChatRoomResponse;
 
 @Service
 @RequiredArgsConstructor

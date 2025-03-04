@@ -10,13 +10,11 @@ import com.sns.project.config.constants.RedisKeys;
 import com.sns.project.domain.chat.ChatMessage;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.user.User;
-import com.sns.project.dto.chat.request.ChatMessageRequest;
-import com.sns.project.dto.chat.response.ChatMessageResponse;
+import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
 import com.sns.project.repository.chat.ChatMessageRepository;
 import com.sns.project.repository.chat.ChatRoomRepository;
 import com.sns.project.service.RedisService;
 import com.sns.project.service.user.UserService;
-import com.sns.project.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

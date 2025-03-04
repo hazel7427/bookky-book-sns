@@ -7,15 +7,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import com.sns.project.domain.follow.Follow;
 import com.sns.project.domain.user.User;
-import com.sns.project.dto.following.FollowingsResponse;
-import com.sns.project.dto.following.FollowUserResponse;
-import com.sns.project.dto.following.FollowersResponse;
+import com.sns.project.controller.follow.dto.FollowingsResponse;
+import com.sns.project.controller.follow.dto.FollowUserResponse;
+import com.sns.project.controller.follow.FollowersResponse;
 import com.sns.project.service.user.UserService;
 import com.sns.project.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service

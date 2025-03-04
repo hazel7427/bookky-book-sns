@@ -9,6 +9,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 
 import com.sns.project.service.user.TokenService;
 
@@ -20,11 +22,11 @@ public class AuthAspect {
 
     private final TokenService tokenService;
 
-    @Around("@annotation(com.sns.project.aspect.userAuth.AuthRequired)")
+    @Around("@annotation(com.sns.project.config.aspect.userAuth.AuthRequired)")
     public Object validateToken(ProceedingJoinPoint joinPoint) throws Throwable {
-        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String authHeader = requestAttributes.getRequest().getHeader("Authorization");
-        String token = authHeader.substring(7);
+        
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = extractTokenFromCookies(request);
         Long userId = tokenService.validateToken(token);
         log.info("userId: {}", userId);
         UserContext.setUserId(userId);
@@ -34,5 +36,16 @@ public class AuthAspect {
         } finally {
             UserContext.clear();
         }
+    }
+
+    private String extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 } 

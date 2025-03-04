@@ -1,7 +1,7 @@
 package com.sns.project.domain.user;
 
 
-import com.sns.project.dto.user.request.RequestRegisterDto;
+import com.sns.project.controller.user.dto.request.RequestRegisterDto;
 
 public class UserFactory {
 

@@ -13,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import com.sns.project.dto.mail.MailTask;
 import com.sns.project.handler.exceptionHandler.exception.EmailNotSentException;
 import com.sns.project.service.RedisService;
 

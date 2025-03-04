@@ -7,9 +7,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sns.project.dto.notification.workerDto.RawNotificationDto;
-import com.sns.project.dto.notification.workerDto.BatchProcessedNotificationDto;
-import com.sns.project.dto.notification.workerDto.NotificationContentDto;
+import com.sns.project.controller.noticiation.dto.workerDto.RawNotificationDto;
+import com.sns.project.controller.noticiation.dto.workerDto.BatchProcessedNotificationDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

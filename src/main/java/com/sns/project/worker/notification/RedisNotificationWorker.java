@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import com.sns.project.domain.notification.NotificationContent;
 import com.sns.project.domain.notification.Notification;
 import com.sns.project.domain.user.User;
-import com.sns.project.dto.notification.response.ResponseNotificationDto;
-import com.sns.project.dto.notification.workerDto.BatchProcessedNotificationDto;
+import com.sns.project.controller.noticiation.dto.response.ResponseNotificationDto;
+import com.sns.project.controller.noticiation.dto.workerDto.BatchProcessedNotificationDto;
 import com.sns.project.repository.notification.NotificationRepository;
 import com.sns.project.service.RedisService;
 

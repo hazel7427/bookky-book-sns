@@ -4,11 +4,10 @@ import com.sns.project.domain.user.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
-import com.sns.project.dto.comment.CommentRequestDto;
-import com.sns.project.dto.comment.CommentResponseDto;
-import com.sns.project.dto.user.request.RequestRegisterDto;
+import com.sns.project.controller.comment.dto.CommentRequestDto;
+import com.sns.project.controller.comment.dto.CommentResponseDto;
+import com.sns.project.controller.user.dto.request.RequestRegisterDto;
 import com.sns.project.service.NotificationService;
 import com.sns.project.service.RedisService;
 import com.sns.project.service.chat.ChatRoomService;

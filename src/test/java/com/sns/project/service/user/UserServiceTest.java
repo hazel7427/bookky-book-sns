@@ -1,34 +1,11 @@
 package com.sns.project.service.user;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.sns.project.domain.user.User;
-import com.sns.project.dto.user.request.RequestRegisterDto;
-import com.sns.project.dto.mail.MailTask;
-import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
-import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
-import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
-import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
-import com.sns.project.repository.UserRepository;
-import com.sns.project.service.RedisService;
-import com.sns.project.config.JwtTokenProvider;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.thymeleaf.spring6.SpringTemplateEngine;
-
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {

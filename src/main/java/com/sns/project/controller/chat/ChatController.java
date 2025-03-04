@@ -2,16 +2,14 @@ package com.sns.project.controller.chat;
 
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.UnauthorizedException;
 
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
-import com.sns.project.dto.chat.request.ChatMessageRequest;
-import com.sns.project.dto.chat.response.ChatMessageResponse;
+import com.sns.project.controller.chat.dto.request.ChatMessageRequest;
+import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
 import com.sns.project.service.chat.ChatService;
 
 import lombok.RequiredArgsConstructor;

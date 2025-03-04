@@ -4,7 +4,7 @@ import com.sns.project.config.constants.AppConstants;
 import com.sns.project.config.constants.RedisKeys;
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
-import com.sns.project.dto.user.request.RequestRegisterDto;
+import com.sns.project.controller.user.dto.request.RequestRegisterDto;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundUserException;
 import com.sns.project.handler.exceptionHandler.exception.badRequest.RegisterFailedException;
@@ -25,14 +25,12 @@ import org.thymeleaf.context.Context;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import com.sns.project.dto.mail.MailTask;
+import com.sns.project.worker.MailTask;
 import org.mindrot.jbcrypt.BCrypt;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
 import com.sns.project.config.JwtTokenProvider;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
 import org.webjars.NotFoundException;
-
-import static com.sns.project.config.constants.RedisKeys.*;
 
 @Service
 @RequiredArgsConstructor

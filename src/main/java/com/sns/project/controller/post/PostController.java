@@ -2,10 +2,10 @@ package com.sns.project.controller.post;
 
 import com.sns.project.config.aspect.userAuth.AuthRequired;
 import com.sns.project.config.aspect.userAuth.UserContext;
-import com.sns.project.dto.post.response.PostsResponse;
-import com.sns.project.dto.post.response.ResponsePostDto;
+import com.sns.project.controller.post.post.response.PostsResponse;
+import com.sns.project.controller.post.post.response.ResponsePostDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
-import com.sns.project.dto.post.response.PostSummaryDto;
+import com.sns.project.controller.post.post.response.PostSummaryDto;
 import com.sns.project.service.post.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
