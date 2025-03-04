@@ -9,6 +9,7 @@ public class AppConstants {
 
   public static class PasswordReset {
     public static final int EXPIRATION_MINUTES = 30;
+    public static final String RESET_PASSWORD_PATH = "/reset-password?token=";
   }
 
   public static class User {

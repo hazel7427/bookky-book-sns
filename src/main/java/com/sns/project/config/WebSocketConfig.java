@@ -1,13 +1,14 @@
 package com.sns.project.config;
 
+import com.sns.project.config.interceptor.StompAuthChannelInterceptor;
+import com.sns.project.config.interceptor.StompDebugInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
-import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+
 
 import lombok.AllArgsConstructor;
 
@@ -16,26 +17,18 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final AuthHandshakeInterceptor authHandshakeInterceptor;
     private final StompDebugInterceptor stompDebugInterceptor;
+    private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/alarm")
             .setAllowedOriginPatterns("*");
-            // .addInterceptors(authHandshakeInterceptor)
-//            .withSockJS();
-
 
         registry.addEndpoint("/ws/chat")
             .setAllowedOriginPatterns("*")
-            .addInterceptors(authHandshakeInterceptor)
             .withSockJS();
-
-            
     }
-
-
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -46,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         System.out.println("✅ [DEBUG] STOMP 메시지 채널 인터셉터 추가됨");
-        registration.interceptors(stompDebugInterceptor);
+        registration.interceptors(stompAuthChannelInterceptor);
     }
 
 } 

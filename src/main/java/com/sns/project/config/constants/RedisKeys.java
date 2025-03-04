@@ -1,6 +1,18 @@
 package com.sns.project.config.constants;
 
-public class Constants {
+public class RedisKeys {
+
+    public enum Chat {
+        CHAT_ROOM_USERS_KEY("chat:room:users:"),
+        CHAT_READ_QUEUE("chat:readQueue"),
+        CHAT_UNREAD_COUNT_KEY("chat:unreadCount:"),
+        CHAT_PRESENCE_KEY("chat:presence:");
+
+        private final String key;
+        Chat(String key) { this.key = key; }
+        public String get() { return key; }
+    }
+    
     public enum Auth {
         CACHE_PREFIX("auth:");
         
@@ -11,8 +23,7 @@ public class Constants {
 
     public enum PasswordReset {
         MAIL_QUEUE("mail:queue"),
-        RESET_TOKEN("passwordResetTokenKey"),
-        RESET_PATH("/reset-password?token=");
+        RESET_TOKEN("password-reset:token:");
 
         private final String key;
         PasswordReset(String key) { this.key = key; }
@@ -20,7 +31,7 @@ public class Constants {
     }
 
     public enum User {
-        CACHE_KEY("userCacheKey");
+        CACHE_KEY("user:cache");
 
         private final String key;
         User(String key) { this.key = key; }
