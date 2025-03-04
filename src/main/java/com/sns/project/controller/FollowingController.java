@@ -2,22 +2,17 @@ package com.sns.project.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.sns.project.aspect.userAuth.AuthRequired;
-import com.sns.project.aspect.userAuth.UserContext;
+import com.sns.project.config.aspect.userAuth.AuthRequired;
+import com.sns.project.config.aspect.userAuth.UserContext;
 import com.sns.project.dto.following.FollowersResponse;
 import com.sns.project.dto.following.FollowingsResponse;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
 import com.sns.project.service.following.FollowingService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController

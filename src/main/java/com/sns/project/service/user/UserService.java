@@ -1,8 +1,7 @@
 package com.sns.project.service.user;
 
 import com.sns.project.config.constants.AppConstants;
-import com.sns.project.config.constants.Constants;
-import com.sns.project.domain.post.Post;
+import com.sns.project.config.constants.RedisKeys;
 import com.sns.project.domain.user.User;
 import com.sns.project.domain.user.UserFactory;
 import com.sns.project.dto.user.request.RequestRegisterDto;
@@ -24,7 +23,6 @@ import org.springframework.core.io.Resource;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import com.sns.project.dto.mail.MailTask;
@@ -34,7 +32,7 @@ import com.sns.project.config.JwtTokenProvider;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
 import org.webjars.NotFoundException;
 
-import static com.sns.project.config.constants.Constants.*;
+import static com.sns.project.config.constants.RedisKeys.*;
 
 @Service
 @RequiredArgsConstructor
@@ -104,14 +102,14 @@ public class UserService {
    */
   private void cacheUserData(User user) {
     try {
-      redisService.putValueInHash(Constants.User.CACHE_KEY.get(), user.getEmail(), user);
+      redisService.putValueInHash(RedisKeys.User.CACHE_KEY.get(), user.getEmail(), user);
     } catch (Exception e) {
       log.error("사용자 데이터 캐싱 실패. 사용자: {}, 에러: {}", user.getEmail(), e.getMessage());
     }
   }
 
   private String createPasswordResetKey(String token) {
-    return Constants.PasswordReset.RESET_TOKEN.get() + token;
+    return RedisKeys.PasswordReset.RESET_TOKEN.get() + token;
   }
 
   /*
@@ -132,7 +130,7 @@ public class UserService {
         });
     
     String token = UUID.randomUUID().toString();
-    String resetPath = PasswordReset.RESET_PATH.get();
+    String resetPath = AppConstants.PasswordReset.RESET_PASSWORD_PATH;
     String resetLink = domainUrl + resetPath + token;
     String passwordResetHashKey = createPasswordResetKey(token);
 
@@ -145,7 +143,7 @@ public class UserService {
         .subject("비밀번호를 재설정하세요")
         .build();
 
-    String key = Constants.PasswordReset.MAIL_QUEUE.get();
+    String key = RedisKeys.PasswordReset.MAIL_QUEUE.get();
     redisService.pushToQueue(key, mailTask);
     log.info("비밀번호 재설정 메일 큐 추가 완료: {}", email);
   }

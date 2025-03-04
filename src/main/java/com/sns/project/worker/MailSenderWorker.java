@@ -1,9 +1,8 @@
 package com.sns.project.worker;
 
 
-import com.sns.project.config.constants.Constants.PasswordReset;
+import com.sns.project.config.constants.RedisKeys.PasswordReset;
 import io.lettuce.core.RedisConnectionException;
-import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import com.sns.project.config.constants.Constants;
 import com.sns.project.dto.mail.MailTask;
 import com.sns.project.handler.exceptionHandler.exception.EmailNotSentException;
 import com.sns.project.service.RedisService;
@@ -32,8 +30,7 @@ public class MailSenderWorker {
         while (true) {
             try {
                 String key = PasswordReset.MAIL_QUEUE.get();
-                MailTask task = redisService.popFromQueueBlocking(key, MailTask.class);
-                log.info("새로운 이메일 테스트: {}", task);
+                MailTask task = redisService.popFromQueueBlocking(key, MailTask.class, 10);
                 if (task != null) {
                     sendEmail(task);
                 }

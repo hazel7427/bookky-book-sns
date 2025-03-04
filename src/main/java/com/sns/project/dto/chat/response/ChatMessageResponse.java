@@ -15,12 +15,14 @@ public class ChatMessageResponse {
     private String sentAt;
     private Long senderId;
     private String senderName;
+    private int unreadCount;
 
-    public ChatMessageResponse(ChatMessage chatMessage) {
+    public ChatMessageResponse(ChatMessage chatMessage, int unreadCount) {
         this.id = chatMessage.getId();
         this.message = chatMessage.getMessage();
         this.sentAt = chatMessage.getSentAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.senderId = chatMessage.getSender().getId();
         this.senderName = chatMessage.getSender().getName();
+        this.unreadCount = unreadCount;
     }
 }

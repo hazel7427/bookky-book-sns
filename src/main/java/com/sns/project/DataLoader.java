@@ -1,4 +1,4 @@
-package com.sns.project.config;
+package com.sns.project;
 
 import com.sns.project.domain.user.User;
 import java.util.ArrayList;

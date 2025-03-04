@@ -1,5 +1,6 @@
 package com.sns.project.service.chat;
 
+import com.sns.project.config.constants.RedisKeys;
 import com.sns.project.domain.chat.ChatParticipant;
 import com.sns.project.repository.chat.ChatParticipantRepository;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.chat.ChatRoomType;
 import com.sns.project.repository.chat.ChatRoomRepository;
+import com.sns.project.service.RedisService;
 import com.sns.project.service.user.UserService;
 import com.sns.project.domain.user.User;
 import com.sns.project.dto.chat.response.ChatRoomResponse;
@@ -25,7 +27,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final UserService userService;
-    
+    private final RedisService redisService;
     @Transactional
     public ChatRoomResponse createRoom(String name, List<Long> participantIds, User creator) {
         if (participantIds.size() == 0) {
@@ -40,6 +42,8 @@ public class ChatRoomService {
                                     .build();
         chatRoomRepository.save(chatRoom);
 
+
+        String roomUsersKey = RedisKeys.Chat.CHAT_ROOM_USERS_KEY.get() + chatRoom.getId();
         Set<Long> uniqueParticipantIds = new HashSet<>(participantIds);
         uniqueParticipantIds.add(creator.getId());
         List<User> participants = userService.getUsersByIds(uniqueParticipantIds);
@@ -47,8 +51,10 @@ public class ChatRoomService {
         for (User participant : participants) {
             ChatParticipant chatParticipant = new ChatParticipant(chatRoom, participant);
             chatParticipants.add(chatParticipantRepository.save(chatParticipant));
+            redisService.addToSet(roomUsersKey, participant.getId());
         }
 
+        
         return new ChatRoomResponse(chatRoom, chatParticipants);
     }
 

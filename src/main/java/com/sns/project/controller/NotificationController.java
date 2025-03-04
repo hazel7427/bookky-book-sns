@@ -1,8 +1,5 @@
 package com.sns.project.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sns.project.aspect.userAuth.AuthRequired;
-import com.sns.project.aspect.userAuth.UserContext;
+import com.sns.project.config.aspect.userAuth.AuthRequired;
+import com.sns.project.config.aspect.userAuth.UserContext;
 import com.sns.project.domain.notification.Notification;
 import com.sns.project.dto.notification.response.ResponseNotificationListDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;

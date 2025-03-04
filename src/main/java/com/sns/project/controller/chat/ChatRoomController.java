@@ -1,14 +1,13 @@
 package com.sns.project.controller.chat;
 
-import com.sns.project.aspect.userAuth.AuthRequired;
-import com.sns.project.aspect.userAuth.UserContext;
-import com.sns.project.domain.chat.ChatMessage;
-import com.sns.project.domain.chat.ChatRoom;
+import com.sns.project.config.aspect.userAuth.AuthRequired;
+import com.sns.project.config.aspect.userAuth.UserContext;
 import com.sns.project.domain.user.User;
 import com.sns.project.dto.chat.request.ChatRoomRequest;
 import com.sns.project.dto.chat.response.ChatMessageResponse;
 import com.sns.project.dto.chat.response.ChatRoomResponse;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
+import com.sns.project.service.chat.ChatReadService;
 import com.sns.project.service.chat.ChatRoomService;
 import com.sns.project.service.chat.ChatService;
 import com.sns.project.service.user.UserService;
@@ -29,6 +28,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final UserService userService;
     private final ChatService chatService;
+    private final ChatReadService chatReadService;
 
     @PostMapping("/room")
     @AuthRequired
@@ -56,6 +56,15 @@ public class ChatRoomController {
     public List<ChatMessageResponse> getChatHistory(@PathVariable Long roomId) {
         System.out.println("✅ [DEBUG] ChatRoomController getChatHistory 호출");
         return chatService.getChatHistory(roomId);
+    }
+    
+
+    @PostMapping("/read/{messageId}")
+    @AuthRequired
+    public ApiResult<Long> markAsRead(@PathVariable Long messageId) {
+        Long userId = UserContext.getUserId();
+        chatReadService.markMessageAsRead(userId, messageId);
+        return ApiResult.success(messageId);
     }
     
 }

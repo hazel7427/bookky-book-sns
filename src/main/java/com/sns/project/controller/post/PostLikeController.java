@@ -1,6 +1,6 @@
 package com.sns.project.controller.post;
 
-import com.sns.project.aspect.userAuth.UserContext;
+import com.sns.project.config.aspect.userAuth.UserContext;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
 import com.sns.project.service.post.PostLikeService;
 

@@ -1,7 +1,7 @@
 package com.sns.project.controller;
 
-import com.sns.project.aspect.userAuth.AuthRequired;
-import com.sns.project.aspect.userAuth.UserContext;
+import com.sns.project.config.aspect.userAuth.AuthRequired;
+import com.sns.project.config.aspect.userAuth.UserContext;
 import com.sns.project.dto.comment.CommentListResponseDto;
 import com.sns.project.dto.comment.CommentReplyRequestDto;
 import com.sns.project.dto.comment.CommentRequestDto;
@@ -9,7 +9,6 @@ import com.sns.project.dto.comment.CommentResponseDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
 import com.sns.project.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
