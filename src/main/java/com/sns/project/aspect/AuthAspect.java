@@ -1,4 +1,4 @@
-package com.sns.project.config.aspect.userAuth;
+package com.sns.project.aspect;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class AuthAspect {
 
     private final TokenService tokenService;
 
-    @Around("@annotation(com.sns.project.config.aspect.userAuth.AuthRequired)")
+    @Around("@annotation(com.sns.project.aspect.AuthRequired)")
     public Object validateToken(ProceedingJoinPoint joinPoint) throws Throwable {
         
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

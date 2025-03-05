@@ -11,6 +11,7 @@ import com.sns.project.controller.user.dto.request.RequestRegisterDto;
 import com.sns.project.service.NotificationService;
 import com.sns.project.service.RedisService;
 import com.sns.project.service.chat.ChatRoomService;
+import com.sns.project.service.chat.ChatService;
 import com.sns.project.service.comment.CommentService;
 import com.sns.project.service.following.FollowingService;
 import com.sns.project.service.post.PostService;
@@ -32,6 +33,7 @@ public class DataLoader implements CommandLineRunner {
     private final FollowingService followingService;
     private final Random random = new Random();
     private final ChatRoomService chatRoomService;
+    private final ChatService chatService;
         @Override
         public void run(String... args) {
             initializeUsers();
@@ -140,6 +142,9 @@ public class DataLoader implements CommandLineRunner {
         private void saveChatRooms() {
             User creator = userService.getUserById(1L);
             chatRoomService.createRoom("test", List.of(2L, 3L), creator);
+            chatService.saveMessage(1L, "test", 1L);
+            chatService.saveMessage(2L, "test", 1L);
+            chatService.saveMessage(3L, "test", 1L);
     }
 }
 

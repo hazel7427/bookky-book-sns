@@ -45,9 +45,9 @@ public class ChatRoom {
     // @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     // private List<ChatMessage> messages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<ChatParticipant> participants = new ArrayList<>();
+     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+     @Builder.Default
+     private List<ChatParticipant> participants = new ArrayList<>();
 
     public ChatRoom(String name, ChatRoomType chatRoomType, User creator) {
         this.name = name;

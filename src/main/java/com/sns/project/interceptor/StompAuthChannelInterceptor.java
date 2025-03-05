@@ -1,4 +1,4 @@
-package com.sns.project.config.interceptor;
+package com.sns.project.interceptor;
 
 import com.sns.project.service.user.UserService;
 import com.sns.project.service.user.TokenService;
@@ -30,29 +30,19 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
             List<String> protocols = accessor.getNativeHeader("Authorization");
 
             log.info("Protocols: {}", protocols);
-            if (protocols != null) {
-                protocols.forEach(protocol -> log.info("Protocol value: {}", protocol));
-            }
-            
-            if (protocols != null && !protocols.isEmpty()) {
-                // The token might be in the first protocol string, split by comma
-                String[] protocolValues = protocols.get(0).split(",");
-                log.info("Split protocol values: {}", (Object) protocolValues);
-                
-                if (protocolValues.length > 1) {
-                    String token = protocolValues[1].trim();  // Get the token and remove whitespace
-                    log.info("Token received: {}", token);
 
-                    try {
-                        Long userId = tokenService.validateToken(token);
-                        accessor.setUser(() -> String.valueOf(userId));
-                        log.info("User authenticated: {}", userId);
-                    } catch (Exception e) {
-                        log.error("Token validation failed: {}", e.getMessage());
-                        return null; // This will prevent the connection
-                    }
+            if (protocols != null && !protocols.isEmpty()) {
+                String token = protocols.get(0);
+                try {
+                    Long userId = tokenService.validateToken(token);
+                accessor.setUser(() -> String.valueOf(userId));
+                log.info("User authenticated: {}", userId);
+            } catch (Exception e) {
+                    log.error("Token validation failed: {}", e.getMessage());
+                    return null; // This will prevent the connection
                 }
             }
+            
         }
         return message;
     }

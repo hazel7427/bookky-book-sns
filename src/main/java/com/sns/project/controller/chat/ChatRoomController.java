@@ -1,7 +1,7 @@
 package com.sns.project.controller.chat;
 
-import com.sns.project.config.aspect.userAuth.AuthRequired;
-import com.sns.project.config.aspect.userAuth.UserContext;
+import com.sns.project.aspect.AuthRequired;
+import com.sns.project.aspect.UserContext;
 import com.sns.project.domain.user.User;
 import com.sns.project.controller.chat.dto.request.ChatRoomRequest;
 import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
@@ -53,17 +53,17 @@ public class ChatRoomController {
     }
 
     @GetMapping("/history/{roomId}")
-    public List<ChatMessageResponse> getChatHistory(@PathVariable Long roomId) {
+    public ApiResult<List<ChatMessageResponse>> getChatHistory(@PathVariable Long roomId) {
         System.out.println("✅ [DEBUG] ChatRoomController getChatHistory 호출");
-        return chatService.getChatHistory(roomId);
+        return ApiResult.success(chatService.getChatHistory(roomId));
     }
     
 
-    @PostMapping("/read/{messageId}")
+    @PostMapping("/read/{roomId}/{messageId}")
     @AuthRequired
-    public ApiResult<Long> markAsRead(@PathVariable Long messageId) {
+    public ApiResult<Long> markAsRead(@PathVariable Long messageId, @PathVariable Long roomId) {
         Long userId = UserContext.getUserId();
-        chatReadService.markMessageAsRead(userId, messageId);
+        chatReadService.markMessageAsRead(userId, messageId, roomId);
         return ApiResult.success(messageId);
     }
     

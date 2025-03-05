@@ -4,6 +4,7 @@ import com.sns.project.handler.exceptionHandler.exception.badRequest.InvalidForm
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundUserException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidPasswordException;
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.InvalidEmailTokenException;
+import com.sns.project.handler.exceptionHandler.exception.notfound.ChatRoomNotFoundException;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundCommentException;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundEmailException;
 import com.sns.project.handler.exceptionHandler.exception.notfound.NotFoundNotificationException;
@@ -68,7 +69,8 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({
       NotFoundEmailException.class, NotFoundUserException.class,
-      NotFoundCommentException.class, NotFoundNotificationException.class
+      NotFoundCommentException.class, NotFoundNotificationException.class,
+      ChatRoomNotFoundException.class
   })
   public ResponseEntity<ApiResult<?>> handleNotFoundException(RuntimeException ex) {
     return newResponse(ex, HttpStatus.NOT_FOUND);

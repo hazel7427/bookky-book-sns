@@ -2,6 +2,7 @@ package com.sns.project.repository.post;
 
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sns.project.controller.post.post.response.QPostSummaryDto;
 import com.sns.project.domain.comment.QComment;
 import com.sns.project.domain.post.Post;
 import com.sns.project.domain.post.QPost;
@@ -9,7 +10,6 @@ import com.sns.project.domain.post.QPostLike;
 import com.sns.project.domain.follow.QFollow;
 import com.sns.project.controller.post.post.response.PostSummaryDto;
 
-import com.sns.project.dto.post.response.QPostSummaryDto;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

@@ -1,4 +1,4 @@
-package com.sns.project.config.aspect.userAuth;
+package com.sns.project.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

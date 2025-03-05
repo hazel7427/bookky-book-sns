@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sns.project.config.aspect.userAuth.AuthRequired;
-import com.sns.project.config.aspect.userAuth.UserContext;
+import com.sns.project.aspect.AuthRequired;
+import com.sns.project.aspect.UserContext;
 import com.sns.project.domain.notification.Notification;
 import com.sns.project.controller.noticiation.dto.response.ResponseNotificationListDto;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;

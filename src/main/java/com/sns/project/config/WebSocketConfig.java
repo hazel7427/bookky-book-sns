@@ -1,7 +1,7 @@
 package com.sns.project.config;
 
-import com.sns.project.config.interceptor.StompAuthChannelInterceptor;
-import com.sns.project.config.interceptor.StompDebugInterceptor;
+import com.sns.project.interceptor.StompAuthChannelInterceptor;
+import com.sns.project.interceptor.StompDebugInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

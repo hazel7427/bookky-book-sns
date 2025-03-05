@@ -1,4 +1,4 @@
-package com.sns.project.config.aspect.userAuth;
+package com.sns.project.aspect;
 
 public class UserContext {
     private static final ThreadLocal<Long> currentUserId = new ThreadLocal<>();

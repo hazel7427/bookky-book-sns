@@ -3,6 +3,7 @@ package com.sns.project.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Set;
+import javax.swing.text.html.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -40,18 +41,18 @@ public class RedisService {
     }
 
     // ✅ Value Operations (Key-Value)
-    public Long decrementValue(String key) {
+    public Optional<Long> decrementValue(String key) {
         Object value = redisTemplate.opsForValue().get(key);
     
         if (value == null) {
-            return null;
+            return Optional.empty();
         }
     
         if (value instanceof String) {
             try {
                 Long numericValue = Long.parseLong((String) value);
                 redisTemplate.opsForValue().set(key, String.valueOf(numericValue - 1));
-                return numericValue - 1;
+                return Optional.of(numericValue - 1);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Stored value is not a valid number for key: " + key);
             }
@@ -144,5 +145,10 @@ public class RedisService {
         return members.stream()
                       .map(member -> deserialize(member.toString(), clazz))
                       .collect(Collectors.toSet());
+    }
+
+    public void setValue(String key, Object value) {
+        String jsonValue = serialize(value);
+        redisTemplate.opsForValue().set(key, jsonValue);
     }
 }

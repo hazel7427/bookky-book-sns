@@ -1,4 +1,4 @@
-package com.sns.project.config.interceptor;
+package com.sns.project.interceptor;
 
 import org.springframework.stereotype.Component;
 

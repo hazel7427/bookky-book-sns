@@ -20,8 +20,7 @@ public class ChatPresenceListener {
     public void handleSubscribeEvent(SessionSubscribeEvent event) {
         Long roomId = extractRoomId(event);
         Long userId = extractUserId(event);
-        log.error("roomId: {}", roomId);
-        log.error("userId: {}", userId);
+        log.info("User {} entered room {}", userId, roomId);
         if (roomId != null && userId != null) {
             chatPresenceService.userEnteredRoom(roomId, userId);
         }
@@ -45,8 +44,8 @@ public class ChatPresenceListener {
     }
 
     private Long extractUserId(SessionSubscribeEvent event) {
-        String sessionId = (String) event.getMessage().getHeaders().get("simpSessionId");
-        return getUserIdFromSession(sessionId); // 세션 ID를 통해 userId 매핑 (세션 저장 필요)
+        String userId = (String) event.getUser().getName();
+        return Long.parseLong(userId);
     }
 
     private Long extractRoomId(SessionUnsubscribeEvent event) {
@@ -58,12 +57,8 @@ public class ChatPresenceListener {
     }
 
     private Long extractUserId(SessionUnsubscribeEvent event) {
-        String sessionId = (String) event.getMessage().getHeaders().get("simpSessionId");
-        return getUserIdFromSession(sessionId);
+        String userId = (String) event.getUser().getName();
+        return Long.parseLong(userId);
     }
 
-    private Long getUserIdFromSession(String sessionId) {
-        // 실제 사용자 ID를 WebSocket 세션에서 가져오는 로직 구현 필요
-        return 1L; // 예제 (실제 로직 필요)
-    }
 }

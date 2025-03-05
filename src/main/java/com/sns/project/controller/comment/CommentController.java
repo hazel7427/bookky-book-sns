@@ -1,7 +1,7 @@
 package com.sns.project.controller.comment;
 
-import com.sns.project.config.aspect.userAuth.AuthRequired;
-import com.sns.project.config.aspect.userAuth.UserContext;
+import com.sns.project.aspect.AuthRequired;
+import com.sns.project.aspect.UserContext;
 import com.sns.project.controller.comment.dto.CommentListResponseDto;
 import com.sns.project.controller.comment.dto.CommentReplyRequestDto;
 import com.sns.project.controller.comment.dto.CommentRequestDto;

@@ -2,6 +2,7 @@ package com.sns.project.controller.chat;
 
 import com.sns.project.handler.exceptionHandler.exception.unauthorized.UnauthorizedException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
@@ -12,30 +13,26 @@ import com.sns.project.controller.chat.dto.request.ChatMessageRequest;
 import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
 import com.sns.project.service.chat.ChatService;
 
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/sendMessage")
-    public void sendMessage(
-        @Payload ChatMessageRequest chatMessageRequest, 
-        StompHeaderAccessor headerAccessor) {
-        System.out.println("✅ [DEBUG] WebSocket 메시지 수신: " + chatMessageRequest.getMessage());
-
-        Long senderId = (Long) headerAccessor.getSessionAttributes().get("userId");
-
-        if (senderId == null) {
+    public void sendMessage(@Payload ChatMessageRequest chatMessageRequest, Principal principal) {
+        if (principal == null) {
             throw new UnauthorizedException("User not authenticated in WebSocket session");
         }
-
+        
+        Long senderId = Long.parseLong(principal.getName());
         Long roomId = chatMessageRequest.getRoomId();
         ChatMessageResponse response = chatService.saveMessage(senderId, chatMessageRequest.getMessage(), roomId);
-        System.out.println(response);
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
     }
     

@@ -190,9 +190,9 @@ public class UserService {
     return token;
   }
 
-  public User getUserById(Long userId) {
-    return userRepository.findById(userId)
-        .orElseThrow(() -> new NotFoundUserException(userId));
+  public User getUserById(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new NotFoundUserException("user id(" + id+ ")does not exist"));
   }
 
   public boolean isExistUser(Long userId) {
@@ -202,6 +202,11 @@ public class UserService {
   public List<User> getUsersByIds(Set<Long> participantIds) {
     return userRepository.findAllById(participantIds);
   }
+
+public void findByUserId(String userId) {
+    userRepository.findByUserId(userId)
+        .orElseThrow(() -> new NotFoundUserException(userId));
+}
 
 
 
