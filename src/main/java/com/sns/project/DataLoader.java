@@ -142,9 +142,9 @@ public class DataLoader implements CommandLineRunner {
         private void saveChatRooms() {
             User creator = userService.getUserById(1L);
             chatRoomService.createRoom("test", List.of(2L, 3L), creator);
-            chatService.saveMessage(1L, "test", 1L);
-            chatService.saveMessage(2L, "test", 1L);
-            chatService.saveMessage(3L, "test", 1L);
+//            chatService.saveMessage(1L, "test", 1L);
+//            chatService.saveMessage(2L, "test", 1L);
+//            chatService.saveMessage(3L, "test", 1L);
     }
 }
 

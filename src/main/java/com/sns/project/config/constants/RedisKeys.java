@@ -6,7 +6,7 @@ public class RedisKeys {
         CHAT_ROOM_USERS_KEY("chat:room:users:"),
         CHAT_READ_QUEUE_KEY("chat:read:queue:"),
         CHAT_UNREAD_COUNT_KEY("chat:unread:count:"),
-        CHAT_PRESENCE_USERS_KEY("chat:presence:");
+        CONNECTED_USERS("chat:presence:");
         // CHAT_MESSAGES_KEY("chat:messages:"),
         // CHAT_ROOM_INFO_KEY("chat:room:info:");
 
@@ -18,7 +18,7 @@ public class RedisKeys {
             return this.key + messageId;
         }
         
-        public String getPresenceUsersKey(Long roomId) {
+        public String getConnectedKey(Long roomId) {
             return this.key + roomId;
         }
         

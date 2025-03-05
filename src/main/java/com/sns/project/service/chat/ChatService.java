@@ -1,5 +1,6 @@
 package com.sns.project.service.chat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sns.project.config.constants.RedisKeys;
 import com.sns.project.domain.chat.ChatMessage;
+import com.sns.project.domain.chat.ChatReadMessage;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.user.User;
 import com.sns.project.handler.exceptionHandler.exception.notfound.ChatRoomNotFoundException;
@@ -44,26 +46,33 @@ public class ChatService {
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
         log.info("Chat message saved successfully. MessageId: {}, RoomId: {}", savedMessage.getId(), roomId);
 
-        String unreadKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_KEY.getUnreadCountKey(savedMessage.getId());
+        chatReadService.saveReadMessage(senderId, savedMessage.getId(), roomId);
+        
+        String connectedUsersKey = RedisKeys.Chat.CONNECTED_USERS.getConnectedKey(roomId);
+        Set<Long> connectedUsers = redisService.getValuesFromSet(connectedUsersKey, Long.class);
+        
         Long participantCount = chatParticipantRepository.countByChatRoomId(roomId);
-        redisService.setValue(unreadKey, participantCount);
-        log.debug("Unread count set for message. MessageId: {}, Count: {}", savedMessage.getId(), participantCount);
-
-        String presenceKey = RedisKeys.Chat.CHAT_PRESENCE_USERS_KEY.getPresenceUsersKey(roomId);
-        Set<Long> presence = redisService.getValuesFromSet(presenceKey, Long.class);
-        if (presence != null && !presence.isEmpty()) {
-            presence.forEach(userId -> chatReadService.markMessageAsRead(userId, savedMessage.getId(), roomId));
-            log.debug("Marked message as read for {} active users", presence.size());
+        Long initialUnreadCount = participantCount - 1;
+        if (connectedUsers != null && !connectedUsers.isEmpty()) {
+            initialUnreadCount -= connectedUsers.stream()
+                    .filter(userId -> !userId.equals(senderId))
+                    .count();
         }
 
-        Long unreadCountOfMessage = redisService.getValue(unreadKey, Long.class).orElse(participantCount);
-        return new ChatMessageResponse(savedMessage, unreadCountOfMessage);
+        String unreadKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_KEY.getUnreadCountKey(savedMessage.getId());
+        redisService.setValue(unreadKey, initialUnreadCount);
+        
+        if (connectedUsers != null && !connectedUsers.isEmpty()) {
+            connectedUsers.stream()
+                    .filter(userId -> !userId.equals(senderId))
+                    .forEach(userId -> chatReadService.saveReadMessage(userId, savedMessage.getId(), roomId));
+        }
+
+        return new ChatMessageResponse(savedMessage, initialUnreadCount);
     }
 
-
-
     public List<ChatMessageResponse> getChatHistory(Long roomId) {
-        List<ChatMessage> messages = chatMessageRepository.findByChatRoomId(roomId);
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdWithUser(roomId);
         return messages.stream().map(msg -> {
             String unreadKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_KEY.get() + msg.getId();
             Long unreadCount = redisService.getValue(unreadKey, Long.class).orElse(0L);

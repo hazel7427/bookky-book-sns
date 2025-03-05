@@ -59,12 +59,12 @@ public class ChatRoomController {
     }
     
 
-    @PostMapping("/read/{roomId}/{messageId}")
+    @PostMapping("/room/{roomId}/enter")
     @AuthRequired
-    public ApiResult<Long> markAsRead(@PathVariable Long messageId, @PathVariable Long roomId) {
+    public ApiResult<Void> enterChatRoom(@PathVariable Long roomId) {
         Long userId = UserContext.getUserId();
-        chatReadService.markMessageAsRead(userId, messageId, roomId);
-        return ApiResult.success(messageId);
+        chatReadService.markAllAsRead(userId, roomId);
+        return ApiResult.success(null);
     }
     
 }
