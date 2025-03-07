@@ -15,9 +15,9 @@ public class ChatMessageResponse {
     private String sentAt;
     private Long senderId;
     private String senderName;
-    private Long unreadCount;
+    private int unreadCount;
 
-    public ChatMessageResponse(ChatMessage chatMessage, Long unreadCount) {
+    public ChatMessageResponse(ChatMessage chatMessage, int unreadCount) {
         this.id = chatMessage.getId();
         this.message = chatMessage.getMessage();
         this.sentAt = chatMessage.getSentAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

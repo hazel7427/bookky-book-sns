@@ -43,14 +43,16 @@ public class ChatRoomService {
         chatRoomRepository.save(chatRoom);
 
 
-        String roomUsersKey = RedisKeys.Chat.CHAT_ROOM_USERS_KEY.get() + chatRoom.getId();
+        String roomUsersKey = RedisKeys.Chat.CHAT_ROOM_PARTIPICIANTS.getParticipants(chatRoom.getId());
         Set<Long> uniqueParticipantIds = new HashSet<>(participantIds);
         uniqueParticipantIds.add(creator.getId());
         List<User> participants = userService.getUsersByIds(uniqueParticipantIds);
         List<ChatParticipant> chatParticipants = new ArrayList<>();
         for (User participant : participants) {
+            // 채팅방 참여자 목록 데이터베이스 저장
             ChatParticipant chatParticipant = new ChatParticipant(chatRoom, participant);
             chatParticipants.add(chatParticipantRepository.save(chatParticipant));
+            // 채팅방 참여자 목록 캐시 업데이트
             redisService.addToSet(roomUsersKey, participant.getId());
         }
 

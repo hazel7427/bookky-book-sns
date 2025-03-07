@@ -63,6 +63,7 @@ public class ChatRoomController {
     @AuthRequired
     public ApiResult<Void> enterChatRoom(@PathVariable Long roomId) {
         Long userId = UserContext.getUserId();
+        System.out.println("✅ [DEBUG] ChatRoomController enterChatRoom 호출" + userId + " " + roomId);
         chatReadService.markAllAsRead(userId, roomId);
         return ApiResult.success(null);
     }

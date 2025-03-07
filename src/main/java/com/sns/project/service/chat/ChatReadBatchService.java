@@ -22,7 +22,7 @@ public class ChatReadBatchService {
 //    @Scheduled(fixedRate = 10000) // 10초마다 실행
     public void batchUpdateUnreadCounts() {
 
-        String chatReadQueueKey = RedisKeys.Chat.CHAT_READ_QUEUE_KEY.get();
+        String chatReadQueueKey = RedisKeys.Chat.CHAT_MESSAGE_BATCH_QUEUE_KEY.getMessageBatchQueueKey();
         Set<Long> messageIds = redisService.getValuesFromSet(chatReadQueueKey, Long.class);
 
         if (messageIds == null || messageIds.isEmpty()) {

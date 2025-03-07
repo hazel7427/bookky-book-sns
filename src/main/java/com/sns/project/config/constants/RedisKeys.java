@@ -3,19 +3,26 @@ package com.sns.project.config.constants;
 public class RedisKeys {
 
     public enum Chat {
-        CHAT_ROOM_USERS_KEY("chat:room:users:"),
-        CHAT_READ_QUEUE_KEY("chat:read:queue:"),
-        CHAT_UNREAD_COUNT_KEY("chat:unread:count:"),
-        CONNECTED_USERS("chat:presence:");
-        // CHAT_MESSAGES_KEY("chat:messages:"),
-        // CHAT_ROOM_INFO_KEY("chat:room:info:");
+        CHAT_MESSAGE_BATCH_QUEUE_KEY("chat:message:batch:"),
+
+        CHAT_ROOM_PARTIPICIANTS("chat:room:users:"), // 채팅방에 속한 유저목록
+        CHAT_UNREAD_COUNT_KEY("chat:unread:count:"), // 메시지 별 안읽음 수 
+        CONNECTED_USERS("chat:presence:"), // 채팅방에 접속한 유저목록
+        CHAT_READ_USERS_KEY("chat:read:users:"), // 메시지 별 읽음 유저목록
+        CHAT_LAST_READ_MESSAGE_ID("chat:last:read:message:"), // 유저 별 마지막 읽음 메시지 아이디
+        CHAT_MESSAGES_KEY("chat:messages:"), // 채팅방 메시지
+        CHAT_LOCK_KEY("chat:lock:"); // 채팅방 락
+        // CHAT_ROOM_INFO_KEY("chat:room:info:"); // 채팅방 정보
 
         private final String key;
         Chat(String key) { this.key = key; }
-        public String get() { return key; }
-        
-        public String getUnreadCountKey(Long messageId) {
-            return this.key + messageId;
+//        public String get() { return key; }
+
+        public String getLastReadMessageKey(Long userId, Long roomId) {
+            return this.key + userId + ":" + roomId;
+        }
+        public String getUnreadCountKey() {
+            return this.key;
         }
         
         public String getConnectedKey(Long roomId) {
@@ -24,6 +31,22 @@ public class RedisKeys {
         
         public String getMessagesKey(Long roomId) {
             return this.key + roomId;
+        }
+
+        public String getReadUserKey(String messageId) {
+            return this.key + messageId;
+        }
+
+        public String getMessageBatchQueueKey() {
+            return this.key;
+        }
+
+        public String getParticipants(Long id) {
+            return this.key + id;
+        }
+
+        public String getLockKey(Long userId, Long roomId) {
+            return this.key + userId + ":" + roomId;
         }
     }
     

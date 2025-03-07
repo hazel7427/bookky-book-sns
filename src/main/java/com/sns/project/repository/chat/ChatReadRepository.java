@@ -12,4 +12,6 @@ public interface ChatReadRepository extends JpaRepository<ChatReadMessage, Long>
 
     @Query("SELECT MAX(crm.messageId) FROM ChatReadMessage crm WHERE crm.userId = :userId AND crm.roomId = :roomId")
     Optional<Long> findLastReadMessageId(@Param("userId") Long userId, @Param("roomId") Long roomId);
+
+    Optional<ChatReadMessage> findByUserIdAndMessageId(Long userId, Long messageId);
 }
