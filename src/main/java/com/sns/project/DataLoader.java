@@ -85,7 +85,7 @@ public class DataLoader implements CommandLineRunner {
         private void saveNotifications() {
             Long senderId = 3L;
             List<Long> receiverIds = List.of(1L, 2L);
-            for (int i = 0; i < 30; i++) {
+            for (int i = 0; i < 3; i++) {
                 notificationService.sendNotification("test notification" + i, senderId, receiverIds);
             }
         }

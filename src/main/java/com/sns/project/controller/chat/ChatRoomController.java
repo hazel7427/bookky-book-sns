@@ -4,6 +4,7 @@ import com.sns.project.aspect.AuthRequired;
 import com.sns.project.aspect.UserContext;
 import com.sns.project.domain.user.User;
 import com.sns.project.controller.chat.dto.request.ChatRoomRequest;
+import com.sns.project.controller.chat.dto.response.ChatHistoryResponse;
 import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
 import com.sns.project.controller.chat.dto.response.ChatRoomResponse;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
@@ -53,19 +54,20 @@ public class ChatRoomController {
     }
 
     @GetMapping("/history/{roomId}")
-    public ApiResult<List<ChatMessageResponse>> getChatHistory(@PathVariable Long roomId) {
+    public ApiResult<ChatHistoryResponse> getChatHistory(@PathVariable Long roomId) {
         System.out.println("✅ [DEBUG] ChatRoomController getChatHistory 호출");
-        return ApiResult.success(chatService.getChatHistory(roomId));
+        ChatHistoryResponse res = new ChatHistoryResponse(chatService.getChatHistory(roomId));
+        return ApiResult.success(res);
     }
     
 
     @PostMapping("/room/{roomId}/enter")
     @AuthRequired
-    public ApiResult<Void> enterChatRoom(@PathVariable Long roomId) {
+    public ApiResult<String> enterChatRoom(@PathVariable Long roomId) {
         Long userId = UserContext.getUserId();
         System.out.println("✅ [DEBUG] ChatRoomController enterChatRoom 호출" + userId + " " + roomId);
         chatReadService.markAllAsRead(userId, roomId);
-        return ApiResult.success(null);
+        return ApiResult.success("ok");
     }
     
 }

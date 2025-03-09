@@ -43,7 +43,7 @@ public class ChatRoomService {
         chatRoomRepository.save(chatRoom);
 
 
-        String roomUsersKey = RedisKeys.Chat.CHAT_ROOM_PARTIPICIANTS.getParticipants(chatRoom.getId());
+        String roomUsersKey = RedisKeys.Chat.CHAT_ROOM_PARTICIPANTS_SET_KEY.getParticipants(chatRoom.getId());
         Set<Long> uniqueParticipantIds = new HashSet<>(participantIds);
         uniqueParticipantIds.add(creator.getId());
         List<User> participants = userService.getUsersByIds(uniqueParticipantIds);
@@ -69,6 +69,10 @@ public class ChatRoomService {
                 chatRoom,
                 chatRoom.getParticipants()))
             .collect(Collectors.toList());
+    }
+
+    public ChatRoom getChatRoomById(Long roomId) {
+        return chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
     }
 
 }

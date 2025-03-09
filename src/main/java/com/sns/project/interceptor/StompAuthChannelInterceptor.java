@@ -21,6 +21,13 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
     private final TokenService tokenService;
 
+
+    /*
+              connectHeaders: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`
+                },
+                헤더에서 인증 토큰을 가져옵니다.
+     */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
@@ -29,16 +36,14 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             List<String> protocols = accessor.getNativeHeader("Authorization");
 
-            log.info("Protocols: {}", protocols);
 
             if (protocols != null && !protocols.isEmpty()) {
-                String token = protocols.get(0);
+                String value = protocols.get(0);
+                String token = value.substring(7);
                 try {
                     Long userId = tokenService.validateToken(token);
                 accessor.setUser(() -> String.valueOf(userId));
-                log.info("User authenticated: {}", userId);
             } catch (Exception e) {
-                    log.error("Token validation failed: {}", e.getMessage());
                     return null; // This will prevent the connection
                 }
             }

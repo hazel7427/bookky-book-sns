@@ -26,10 +26,15 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-#        show_sql: true
-        format_sql: true
+        show_sql: false    # SQL 쿼리 숨기기
+        format_sql: false  # SQL 포맷팅 비활성화
+
 logging.level:
-  org.hibernate.SQL: debug
+  org.hibernate.SQL: OFF   # Hibernate SQL 로깅 끄기
+  org.hibernate.type.descriptor.sql: OFF  # SQL 파라미터 로깅 끄기
+  root: info              # 다른 로그는 info 레벨 유지
+  org.springframework: info
+  com.sns.project: debug  # 프로젝트 로그는 debug 레벨 유지
 
 app:
   domain:

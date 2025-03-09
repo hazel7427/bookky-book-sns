@@ -20,7 +20,7 @@ public class ChatPresenceListener {
     public void handleSubscribeEvent(SessionSubscribeEvent event) {
         Long roomId = extractRoomId(event);
         Long userId = extractUserId(event);
-        log.info("User {} entered room {}", userId, roomId);
+//        log.info("User {} entered room {}", userId, roomId);
         if (roomId != null && userId != null) {
             chatPresenceService.userEnteredRoom(roomId, userId);
         }

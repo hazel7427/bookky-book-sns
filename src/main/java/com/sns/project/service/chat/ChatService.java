@@ -53,6 +53,8 @@ public class ChatService {
 
         // 3. Update unread count
         int unreadCount = updateUnreadCount(roomId, savedMessage.getId(),  readCount.get());
+        String unreadBatchKey = Chat.CHAT_MESSAGE_BATCH_SET_KEY.getMessageBatchQueueKey();
+        redisService.addToSet(unreadBatchKey, savedMessage.getId());
 
         return new ChatMessageResponse(savedMessage, unreadCount);
     }
@@ -71,12 +73,11 @@ public class ChatService {
 
     private AtomicInteger processReadStatus(Long senderId, Long roomId, ChatMessage savedMessage) {
         AtomicInteger readCount = new AtomicInteger(0);
-        String connectedUsersKey = Chat.CONNECTED_USERS.getConnectedKey(roomId);
-        System.out.println("connectedUsersKey: " + connectedUsersKey);
+        String connectedUsersKey = Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(roomId);
 
         Set<Long> connectedUserIds = redisService.getValuesFromSet(connectedUsersKey, Long.class);
         connectedUserIds.add(senderId); // 유저가 보내고 바로 나가는 경우 대비해 송신자 아이디 추가
-        connectedUserIds.stream()
+        connectedUserIds
             .forEach(userId -> markMessageAsRead(userId, roomId, savedMessage.getId(), readCount));
 
 
@@ -85,9 +86,9 @@ public class ChatService {
 
     private void markMessageAsRead(Long userId, Long roomId, Long messageId, AtomicInteger readCount) {
 
-        log.info(userId + " roomId " + roomId + " message ID" + messageId);
+        log.info("새로운 메시지를 읽음 처리합니다 user ID:"+ userId + " roomId: " + roomId + " message ID: " + messageId);
 
-        String readUsersKey = RedisKeys.Chat.CHAT_READ_USERS_KEY.getReadUserKey(String.valueOf(messageId));
+        String readUsersKey = RedisKeys.Chat.CHAT_READ_USERS_SET_KEY.getReadUserKey(String.valueOf(messageId));
         redisService.addToSet(readUsersKey, userId);
 
         String lastReadKey = RedisKeys.Chat.CHAT_LAST_READ_MESSAGE_ID.getLastReadMessageKey(userId, roomId) ;
@@ -97,8 +98,8 @@ public class ChatService {
     }
 
     private int updateUnreadCount(Long roomId, Long messageId, int readCount) {
-        String unreadCountKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_KEY.getUnreadCountKey();
-        String participantsKey = RedisKeys.Chat.CHAT_ROOM_PARTIPICIANTS.getParticipants(roomId);
+        String unreadCountKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_HASH_KEY.getUnreadCountKey();
+        String participantsKey = RedisKeys.Chat.CHAT_ROOM_PARTICIPANTS_SET_KEY.getParticipants(roomId);
         Set<Long> participants = redisService.getValuesFromSet(participantsKey, Long.class);
         int unreadCount = participants.size() - readCount;
         redisService.setHashValue(unreadCountKey, String.valueOf(messageId), unreadCount);
@@ -109,7 +110,7 @@ public class ChatService {
     public List<ChatMessageResponse> getChatHistory(Long roomId) {
         List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdWithUser(roomId);
         return messages.stream().map(msg -> {
-            String unreadKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_KEY.getUnreadCountKey();
+            String unreadKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_HASH_KEY.getUnreadCountKey();
             int unreadCount = redisService.getValueFromHash(unreadKey, String.valueOf(msg.getId()), Integer.class);
             return new ChatMessageResponse(msg, unreadCount);
         }).collect(Collectors.toList());

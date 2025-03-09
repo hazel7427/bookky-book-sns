@@ -59,6 +59,14 @@ public class RedisService {
         return Optional.ofNullable(deserialize(value.toString(), clazz));
     }
 
+    public <T> Optional<T> popFromSet(String key, Class<T> clazz) {
+        Object value = redisTemplate.opsForSet().pop(key);
+        if (value == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(deserialize(value.toString(), clazz));
+    }
+
     public Optional<Long> decrementValue(String key) {
         Object value = redisTemplate.opsForValue().get(key);
     
@@ -98,8 +106,8 @@ public class RedisService {
         return deserialize(value.toString(), clazz);
     }
 
-    public void incrementHash(String hashKey, String fieldKey, int value) {
-        redisTemplate.opsForHash().increment(hashKey, fieldKey, value);
+    public Long incrementHash(String hashKey, String fieldKey, int value) {
+        return redisTemplate.opsForHash().increment(hashKey, fieldKey, value);
     }
 
     // ===== Set Operations =====
@@ -201,4 +209,15 @@ public class RedisService {
     public void setHashValue(String unreadCountKey, String messageId, int unreadCount) {
         redisTemplate.opsForHash().put(unreadCountKey, messageId, unreadCount);
     }
+
+    public Set<Long> popMultipleFromSet(String chatReadQueueKey, int limit, Class<Long> clazz) {
+        List<Object> values = redisTemplate.opsForSet().pop(chatReadQueueKey, limit);
+        if (values == null) {
+            return null;
+        }
+        return values.stream()
+                      .map(value -> deserialize(value.toString(), clazz))
+                      .collect(Collectors.toSet());
+    }
+
 }

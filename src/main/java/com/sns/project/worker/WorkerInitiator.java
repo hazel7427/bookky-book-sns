@@ -25,12 +25,12 @@ public class WorkerInitiator {
     @EventListener(ApplicationReadyEvent.class)
     public void runMailSenderWorker() {
         
-        ExecutorService executorService =
-                Executors.newFixedThreadPool(MAIL_SENDER_WORKER_THREAD_NUM);
-
-        for (int i = 0; i < MAIL_SENDER_WORKER_THREAD_NUM; i++) {
-            executorService.submit(mailSenderWorker::processTasks);
-        }
+//        ExecutorService executorService =
+//                Executors.newFixedThreadPool(MAIL_SENDER_WORKER_THREAD_NUM);
+//
+//        for (int i = 0; i < MAIL_SENDER_WORKER_THREAD_NUM; i++) {
+//            executorService.submit(mailSenderWorker::processTasks);
+//        }
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -38,9 +38,9 @@ public class WorkerInitiator {
         ExecutorService executorService =
                 Executors.newFixedThreadPool(NOTIFICATION_SPLIT_WORKER_THREAD_NUM);
 
-        for (int i = 0; i < NOTIFICATION_SPLIT_WORKER_THREAD_NUM; i++) {
-            executorService.submit(notificationSplitWorker::acceptTask);
-        }
+//        for (int i = 0; i < NOTIFICATION_SPLIT_WORKER_THREAD_NUM; i++) {
+//            executorService.submit(notificationSplitWorker::acceptTask);
+//        }
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -48,9 +48,9 @@ public class WorkerInitiator {
         ExecutorService executorService =
                 Executors.newFixedThreadPool(NOTIFICATION_SPLIT_WORKER_THREAD_NUM);
 
-        for (int i = 0; i < NOTIFICATION_SPLIT_WORKER_THREAD_NUM; i++) {
-            executorService.submit(redisNotificationWorker::processBatches);
-        }
+//        for (int i = 0; i < NOTIFICATION_SPLIT_WORKER_THREAD_NUM; i++) {
+//            executorService.submit(redisNotificationWorker::processBatches);
+//        }
     }
 
 }
