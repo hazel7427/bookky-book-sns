@@ -4,6 +4,7 @@ import com.sns.project.aspect.AuthRequired;
 import com.sns.project.aspect.UserContext;
 import com.sns.project.domain.user.User;
 import com.sns.project.controller.chat.dto.request.ChatRoomRequest;
+import com.sns.project.controller.chat.dto.response.AllChatRoomResponse;
 import com.sns.project.controller.chat.dto.response.ChatHistoryResponse;
 import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
 import com.sns.project.controller.chat.dto.response.ChatRoomResponse;
@@ -46,18 +47,18 @@ public class ChatRoomController {
 
     @GetMapping("/rooms")
     @AuthRequired
-    public ApiResult<List<ChatRoomResponse>> getUserChatRooms() {
+    public ApiResult<AllChatRoomResponse> getUserChatRooms() {
         Long userId = UserContext.getUserId();
         User user = userService.getUserById(userId);
 
-        return ApiResult.success(chatRoomService.getUserChatRooms(user));
+        return ApiResult.success(new AllChatRoomResponse(chatRoomService.getUserChatRooms(user)));
     }
 
     @GetMapping("/history/{roomId}")
     public ApiResult<ChatHistoryResponse> getChatHistory(@PathVariable Long roomId) {
         System.out.println("✅ [DEBUG] ChatRoomController getChatHistory 호출");
         ChatHistoryResponse res = new ChatHistoryResponse(chatService.getChatHistory(roomId));
-        return ApiResult.success(res);
+        return ApiResult.success(res); 
     }
     
 
