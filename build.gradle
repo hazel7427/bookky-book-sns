@@ -63,9 +63,9 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// ✅ Test Dependencies
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
 	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 

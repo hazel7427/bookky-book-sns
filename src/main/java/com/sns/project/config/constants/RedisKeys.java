@@ -8,7 +8,7 @@ public class RedisKeys {
         CHAT_ROOM_PARTICIPANTS_SET_KEY("chat:room:users:"), // 채팅방에 속한 유저목록
         CHAT_UNREAD_COUNT_HASH_KEY("chat:unread:count:"), // 메시지 별 안읽음 수
         CONNECTED_USERS_SET_KEY("chat:presence:"), // 채팅방에 접속한 유저목록
-        CHAT_READ_USERS_SET_KEY("chat:read:users:"), // 메시지 별 읽음 유저목록
+        // CHAT_READ_USERS_SET_KEY("chat:read:users:"), // 메시지 별 읽음 유저목록
         CHAT_LAST_READ_MESSAGE_ID("chat:last:read:message:"), // 유저 별 마지막 읽음 메시지 아이디
         CHAT_MESSAGES_KEY("chat:messages:"), // 채팅방 메시지
         CHAT_LOCK_KEY("chat:lock:"); // 채팅방 락
@@ -49,6 +49,14 @@ public class RedisKeys {
 
         public String getLockKey(Long userId, Long roomId) {
             return this.key + userId + ":" + roomId;
+        }
+
+        public String getPrefix() {
+            return this.key;
+        }
+
+        public String getLastReadMessageKeyPattern() {
+            return this.key + "{userId}:{roomId}";
         }
     }
     

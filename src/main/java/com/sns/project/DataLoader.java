@@ -38,7 +38,7 @@ public class DataLoader implements CommandLineRunner {
         public void run(String... args) {
             initializeUsers();
             initializeUserTokens();
-            saveNotifications();
+//            saveNotifications();
             savePosts(1L);
             savePosts(2L);
             savePosts(3L);
@@ -82,13 +82,13 @@ public class DataLoader implements CommandLineRunner {
             return email.split("@")[0] + "_id";
         }
     
-        private void saveNotifications() {
-            Long senderId = 3L;
-            List<Long> receiverIds = List.of(1L, 2L);
-            for (int i = 0; i < 3; i++) {
-                notificationService.sendNotification("test notification" + i, senderId, receiverIds);
-            }
-        }
+//        private void saveNotifications() {
+//            Long senderId = 3L;
+//            List<Long> receiverIds = List.of(1L, 2L);
+//            for (int i = 0; i < 3; i++) {
+//                notificationService.sendNotification("test notification" + i, senderId, receiverIds);
+//            }
+//        }
     
         private void savePosts(Long userId) {
             List<MultipartFile> images = new ArrayList<>();

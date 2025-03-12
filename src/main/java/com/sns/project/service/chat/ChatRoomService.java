@@ -6,6 +6,8 @@ import com.sns.project.repository.chat.ChatParticipantRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.chat.ChatRoomType;
 import com.sns.project.repository.chat.ChatRoomRepository;
-import com.sns.project.service.RedisService;
+import com.sns.project.service.redis.StringRedisService;
 import com.sns.project.service.user.UserService;
 import com.sns.project.domain.user.User;
 import com.sns.project.controller.chat.dto.response.ChatRoomResponse;
@@ -27,7 +29,8 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final UserService userService;
-    private final RedisService redisService;
+    @Qualifier("chatRedisTemplate")  // 변경된 빈 이름 지정
+    private final StringRedisService stringRedisService;
     @Transactional
     public ChatRoomResponse createRoom(String name, List<Long> participantIds, User creator) {
         if (participantIds.size() == 0) {
@@ -53,7 +56,7 @@ public class ChatRoomService {
             ChatParticipant chatParticipant = new ChatParticipant(chatRoom, participant);
             chatParticipants.add(chatParticipantRepository.save(chatParticipant));
             // 채팅방 참여자 목록 캐시 업데이트
-            redisService.addToSet(roomUsersKey, participant.getId());
+            stringRedisService.addToSet(roomUsersKey, participant.getId().toString());
         }
 
         

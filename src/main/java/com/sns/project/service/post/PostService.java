@@ -49,7 +49,7 @@ public class PostService {
     }
 
 
-    notificationService.sendNotification("새로운 게시물이 등록되었습니다", user.getId(), List.of(1L, 2L, 3L));
+//    notificationService.sendNotification("새로운 게시물이 등록되었습니다", user.getId(), List.of(1L, 2L, 3L));
     return savedPost.getId();
   }
 
