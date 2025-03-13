@@ -1,8 +1,10 @@
 package com.sns.project.service.redis;
 
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -36,8 +38,8 @@ public class StringRedisService {
         stringRedisTemplate.opsForHash().put(key, hashKey, value);
     }
 
-    public String getHashValue(String key, String hashKey) {
-        return (String) stringRedisTemplate.opsForHash().get(key, hashKey);
+    public Optional<String> getHashValue(String key, String hashKey) {
+        return Optional.ofNullable((String) stringRedisTemplate.opsForHash().get(key, hashKey));
     }
 
     // ===== Sorted Set Operations =====
@@ -47,6 +49,16 @@ public class StringRedisService {
 
     public Set<String> getZSetRange(String key, double min, double max) {
         return stringRedisTemplate.opsForZSet().rangeByScore(key, min, max);
+    }
+
+    public Optional<String> getHighestScoreFromZSet(String key) {
+        Set<String> values = stringRedisTemplate.opsForZSet().range(key, -1, -1);
+        return Objects.requireNonNull(values).isEmpty() ? Optional.empty() : Optional.of(values.iterator().next());
+    }
+
+    public ZSetOperations.TypedTuple<String> getHighestScoreWithScoreFromZSet(String key) {
+        Set<ZSetOperations.TypedTuple<String>> values = stringRedisTemplate.opsForZSet().rangeWithScores(key, -1, -1);
+        return Objects.requireNonNull(values).isEmpty() ? null : values.iterator().next();
     }
 
     // ===== Basic Operations =====
@@ -81,4 +93,7 @@ public class StringRedisService {
     }
 
 
+  public boolean exists(String key) {
+    return stringRedisTemplate.hasKey(key);
+  }
 } 

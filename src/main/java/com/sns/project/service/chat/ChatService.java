@@ -64,10 +64,6 @@ public class ChatService {
             savedMessage.getId().toString()
         );
 
-        // 3. Add to batch queue
-//        String unreadBatchKey = Chat.CHAT_MESSAGE_BATCH_SET_KEY.getMessageBatchQueueKey();
-//        stringRedisService.addToSet(unreadBatchKey, savedMessage.getId().toString());
-
         return new ChatMessageResponse(savedMessage, unreadCount);
     }
 
@@ -91,7 +87,8 @@ public class ChatService {
         List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdWithUser(roomId);
         return messages.stream().map(msg -> {
             String unreadKey = RedisKeys.Chat.CHAT_UNREAD_COUNT_HASH_KEY.getUnreadCountKey();
-            String unreadCount = stringRedisService.getHashValue(unreadKey, String.valueOf(msg.getId()));
+            String unreadCount = stringRedisService.getHashValue(unreadKey, String.valueOf(msg.getId()))
+            .orElseThrow(() -> new RuntimeException("Unread count not found"));
             return new ChatMessageResponse(msg, Long.valueOf(unreadCount));
         }).collect(Collectors.toList());
     }
