@@ -96,4 +96,11 @@ public class StringRedisService {
   public boolean exists(String key) {
     return stringRedisTemplate.hasKey(key);
   }
+
+    public void deletePattern(String pattern) {
+        Set<String> keys = stringRedisTemplate.keys(pattern);
+        stringRedisTemplate.delete(keys);
+    }
+
+
 } 

@@ -11,7 +11,6 @@ public class UserFactory {
         .userId(dto.getUserId())
         .password(dto.getPassword())
         .name(dto.getName())
-        .profile_image_url(dto.getProfile_image())
         .build();
   }
 

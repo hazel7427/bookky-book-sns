@@ -63,6 +63,7 @@ public class RedisLuaService {
          * KEYS[4] : lastReadKeyPattern
          * ARGV[1] : roomId
          * ARGV[2] : messageId
+         * ARGV[3] : senderId
          */
         PROCESS_NEW_MESSAGE_SCRIPT = new DefaultRedisScript<>();
         PROCESS_NEW_MESSAGE_SCRIPT.setResultType(Long.class);
@@ -72,18 +73,23 @@ public class RedisLuaService {
             local unreadCount = 0
             local roomId = ARGV[1]
             local messageId = ARGV[2]
+            local senderId = ARGV[3]
             
             for _, participant in ipairs(participants) do
                 local isConnected = redis.call('SISMEMBER', KEYS[2], participant)
-                if isConnected == 0 then
+                local isSender = (participant == senderId)
+                
+                if isConnected == 0 and not isSender then
                     unreadCount = unreadCount + 1
                 else
                     local lastReadKey = string.gsub(KEYS[4], "{userId}", participant)
                     lastReadKey = string.gsub(lastReadKey, "{roomId}", roomId)
-                    -- 현재 저장된 값 확인 (없으면 0)
-                    local currentValue = tonumber(redis.call('GET', lastReadKey) or '0')
-                    -- 새 메시지 ID가 더 큰 경우에만 갱신
-                    if tonumber(messageId) > currentValue then
+                    local lastReadId = redis.call('GET', lastReadKey)
+                    if lastReadId ~= nil then
+                        lastReadId = tonumber(lastReadId)
+                    end
+                    
+                    if lastReadId == nil or lastReadId < tonumber(messageId) then
                         redis.call('SET', lastReadKey, messageId)
                     end
                 end
@@ -104,15 +110,18 @@ public class RedisLuaService {
 
     // 새 메시지 처리 메서드
     public Long processNewMessage(
-    String participantsKey, 
-    String connectedUsersKey, 
-    String unreadCountHashKey, 
-    String lastReadKeyPattern, 
-    String roomId, String messageId) {
+        String participantsKey, 
+        String connectedUsersKey, 
+        String unreadCountHashKey, 
+        String lastReadKeyPattern, 
+        String roomId, 
+        String messageId,
+        String senderId  // 작성자 ID 추가
+    ) {
         return stringRedisTemplate.execute(
             PROCESS_NEW_MESSAGE_SCRIPT,
             List.of(participantsKey, connectedUsersKey, unreadCountHashKey, lastReadKeyPattern),
-            roomId, messageId
+            roomId, messageId, senderId
         );
     }
 }

@@ -21,8 +21,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
     private final UserService userService;

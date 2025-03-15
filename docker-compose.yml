@@ -1,0 +1,13 @@
+version: '3'
+services:
+  redis-dev:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    container_name: redis-dev
+
+  redis-test:
+    image: redis:7.0
+    ports:
+      - "6380:6379"
+    container_name: redis-test 

@@ -1,7 +1,0 @@
-version: '3'
-services:
-  redis-test:
-    image: redis:latest
-    ports:
-      - "16379:6379"  # 테스트용 포트를 16379로 설정
-    command: redis-server --port 6379 

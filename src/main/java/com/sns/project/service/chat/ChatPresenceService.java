@@ -15,7 +15,7 @@ public class ChatPresenceService {
     // 사용자가 채팅방에 들어오면 Redis에 저장
     public void userEnteredRoom(Long roomId, Long userId) {
         String key = Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(roomId);
-        stringRedisService.setValueWithExpirationInSet(key, userId.toString(), 10 * 60);
+        stringRedisService.setValueWithExpirationInSet(key, userId.toString(), 10000 *60 * 60);
     }
 
     // 사용자가 채팅방을 나가면 Redis에서 제거

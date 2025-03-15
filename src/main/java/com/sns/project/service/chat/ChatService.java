@@ -61,8 +61,13 @@ public class ChatService {
             Chat.CHAT_UNREAD_COUNT_HASH_KEY.getUnreadCountKey(),
             Chat.CHAT_LAST_READ_MESSAGE_ID.getLastReadMessageKeyPattern(),
             roomId.toString(),
-            savedMessage.getId().toString()
+            savedMessage.getId().toString(),
+            senderId.toString()
         );
+
+        System.out.println("OMGOMG" + unreadCount);
+        System.out.println(stringRedisService.getSetMembers(Chat.CHAT_ROOM_PARTICIPANTS_SET_KEY.getParticipants(roomId)));
+        System.out.println(stringRedisService.getSetMembers(Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(roomId)));
 
         return new ChatMessageResponse(savedMessage, unreadCount);
     }
