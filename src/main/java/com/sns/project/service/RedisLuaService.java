@@ -70,30 +70,32 @@ public class RedisLuaService {
         PROCESS_NEW_MESSAGE_SCRIPT.setResultType(Long.class);
         PROCESS_NEW_MESSAGE_SCRIPT.setScriptText("""
             local participants = redis.call('SMEMBERS', KEYS[1])
-            local connectedUsers = redis.call('SMEMBERS', KEYS[2])
-            local unreadCount = 0
+            local connectedUsersKey = KEYS[2]
+            local unreadCountHashKey = KEYS[3]
+            local lastReadKeyPattern = KEYS[4]
+            local messageZSetKey = KEYS[5]
+
             local roomId = ARGV[1]
             local messageId = tonumber(ARGV[2])
             local senderId = ARGV[3]
-            local lastReadKey = KEYS[4]
-            local messageZSetKey = KEYS[5]
-            local unreadCountHashKey = KEYS[3]
-            
-            for _, participant in ipairs(participants) do
-                local isConnected = redis.call('SISMEMBER', KEYS[2], participant)
-                local isSender = (participant == senderId)
+
+
+            local unreadCount = 0
+
+            for _, participantId in ipairs(participants) do
+                local isConnected = redis.call('SISMEMBER', connectedUsersKey, participantId)
+                local isSender = (participantId == senderId)
                 
                 if isConnected == 0 and not isSender then
                     unreadCount = unreadCount + 1
                 else
-                    local lastReadKey = string.gsub(KEYS[4], "{userId}", participant)
-                    lastReadKey = string.gsub(lastReadKey, "{roomId}", roomId)
-                    local lastReadId = redis.call('GET', lastReadKey)
-                    local lastReadId = tonumber(redis.call('GET', lastReadKey) or "-1")  -- nil이면 "-1"을 기본값으로 설정
+                    local userLastReadKey = string.gsub(lastReadKeyPattern, "{userId}", participantId)
+                    userLastReadKey = string.gsub(userLastReadKey, "{roomId}", roomId)
+                    local lastReadId = tonumber(redis.call('GET', userLastReadKey) or "-1")  -- nil이면 "-1"을 기본값으로 설정
 
                     
                     if lastReadId < messageId then
-                        redis.call('SET', lastReadKey, messageId)
+                        redis.call('SET', userLastReadKey, messageId)
                         -- lastReadId ~ messageId 사이의 메시지들도 읽음 처리
                         local unreadMessages = redis.call('ZRANGEBYSCORE', messageZSetKey, lastReadId + 1, messageId - 1) or {}  -- nil 방지
                         for _, mid in ipairs(unreadMessages) do
@@ -121,7 +123,7 @@ public class RedisLuaService {
         String participantsKey, 
         String connectedUsersKey, 
         String unreadCountHashKey, 
-        String lastReadKeyPattern,
+        String lastReadHashKey,
         String messageZSetKey,
         String roomId, 
         String messageId,
@@ -129,7 +131,7 @@ public class RedisLuaService {
     ) {
         return stringRedisTemplate.execute(
             PROCESS_NEW_MESSAGE_SCRIPT,
-            List.of(participantsKey, connectedUsersKey, unreadCountHashKey, lastReadKeyPattern, messageZSetKey),
+            List.of(participantsKey, connectedUsersKey, unreadCountHashKey, lastReadHashKey, messageZSetKey),
             roomId, messageId, senderId
         );
     }
