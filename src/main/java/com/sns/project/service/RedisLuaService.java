@@ -61,6 +61,7 @@ public class RedisLuaService {
          * KEYS[2] : connectedUsersKey
          * KEYS[3] : unreadCountHashKey
          * KEYS[4] : lastReadKeyPattern
+         * KEYS[5] : messageZSetKey
          * ARGV[1] : roomId
          * ARGV[2] : messageId
          * ARGV[3] : senderId
@@ -72,8 +73,11 @@ public class RedisLuaService {
             local connectedUsers = redis.call('SMEMBERS', KEYS[2])
             local unreadCount = 0
             local roomId = ARGV[1]
-            local messageId = ARGV[2]
+            local messageId = tonumber(ARGV[2])
             local senderId = ARGV[3]
+            local lastReadKey = KEYS[4]
+            local messageZSetKey = KEYS[5]
+            local unreadCountHashKey = KEYS[3]
             
             for _, participant in ipairs(participants) do
                 local isConnected = redis.call('SISMEMBER', KEYS[2], participant)
@@ -85,16 +89,20 @@ public class RedisLuaService {
                     local lastReadKey = string.gsub(KEYS[4], "{userId}", participant)
                     lastReadKey = string.gsub(lastReadKey, "{roomId}", roomId)
                     local lastReadId = redis.call('GET', lastReadKey)
-                    if lastReadId ~= nil then
-                        lastReadId = tonumber(lastReadId)
-                    end
+                    local lastReadId = tonumber(redis.call('GET', lastReadKey) or "-1")  -- nil이면 "-1"을 기본값으로 설정
+
                     
-                    if lastReadId == nil or lastReadId < tonumber(messageId) then
+                    if lastReadId < messageId then
                         redis.call('SET', lastReadKey, messageId)
+                        -- lastReadId ~ messageId 사이의 메시지들도 읽음 처리
+                        local unreadMessages = redis.call('ZRANGEBYSCORE', messageZSetKey, lastReadId + 1, messageId - 1) or {}  -- nil 방지
+                        for _, mid in ipairs(unreadMessages) do
+                            redis.call('HINCRBY', unreadCountHashKey, mid, -1)
+                        end
                     end
                 end
             end
-            redis.call('HSET', KEYS[3], messageId, unreadCount)
+            redis.call('HSET', unreadCountHashKey, messageId, unreadCount)
             return unreadCount
         """);
     }
@@ -113,14 +121,15 @@ public class RedisLuaService {
         String participantsKey, 
         String connectedUsersKey, 
         String unreadCountHashKey, 
-        String lastReadKeyPattern, 
+        String lastReadKeyPattern,
+        String messageZSetKey,
         String roomId, 
         String messageId,
         String senderId  // 작성자 ID 추가
     ) {
         return stringRedisTemplate.execute(
             PROCESS_NEW_MESSAGE_SCRIPT,
-            List.of(participantsKey, connectedUsersKey, unreadCountHashKey, lastReadKeyPattern),
+            List.of(participantsKey, connectedUsersKey, unreadCountHashKey, lastReadKeyPattern, messageZSetKey),
             roomId, messageId, senderId
         );
     }

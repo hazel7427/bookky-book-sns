@@ -45,6 +45,7 @@ public class ChatService {
  
     private final StringRedisService stringRedisService;
 
+
     @Transactional
     public ChatMessageResponse saveMessage(Long senderId, String message, Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
@@ -54,12 +55,14 @@ public class ChatService {
         // 1. Save message and cache in Redis
         ChatMessage savedMessage = saveAndCacheMessage(chatRoom, sender, message, roomId);
 
+
         // 2. Process unread count with Lua script
         Long unreadCount = redisLuaService.processNewMessage(
             Chat.CHAT_ROOM_PARTICIPANTS_SET_KEY.getParticipants(roomId),
             Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(roomId),
             Chat.CHAT_UNREAD_COUNT_HASH_KEY.getUnreadCountKey(),
             Chat.CHAT_LAST_READ_MESSAGE_ID.getLastReadMessageKeyPattern(),
+            Chat.CHAT_MESSAGES_KEY.getMessagesKey(roomId),
             roomId.toString(),
             savedMessage.getId().toString(),
             senderId.toString()

@@ -206,6 +206,11 @@ class ChatServiceIntegrationTest {
         ).orElse("-1");
         assertThat(count).isEqualTo("2");
 
+//        System.out.println("g현재 까지 보냔 메시즐");
+//        System.out.println(stringRedisService.getZSetRange(
+//            Chat.CHAT_MESSAGES_KEY.getMessagesKey(chatRoom.getId()),
+//            0, -1));
+
         // 2. 수신자의 last_read_id가 현재 메시지 ID로 설정되었는지 확인
         String lastReadKey = RedisKeys.Chat.CHAT_LAST_READ_MESSAGE_ID
             .getLastReadMessageKey(receiver.getId(), chatRoom.getId());
@@ -253,7 +258,6 @@ class ChatServiceIntegrationTest {
         // Simulate marking messages as read
         chatReadService.markAllAsRead(receiver.getId(), chatRoom.getId());
 
-        System.out.println(stringRedisService.getSetMembers(Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(chatRoom.getId())));
 
         // then
         // Check that the unread count for the new message is correct
