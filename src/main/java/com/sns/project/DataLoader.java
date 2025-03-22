@@ -10,8 +10,8 @@ import com.sns.project.controller.comment.dto.CommentResponseDto;
 import com.sns.project.controller.user.dto.request.RequestRegisterDto;
 import com.sns.project.service.NotificationService;
 import com.sns.project.service.RedisService;
-import com.sns.project.service.chat.ChatRoomService;
-import com.sns.project.service.chat.ChatService;
+import com.sns.project.chat.service.ChatRoomService;
+import com.sns.project.chat.service.ChatService;
 import com.sns.project.service.comment.CommentService;
 import com.sns.project.service.following.FollowingService;
 import com.sns.project.service.post.PostService;
@@ -38,8 +38,9 @@ public class DataLoader implements CommandLineRunner {
     private final ChatService chatService;
         @Override
         public void run(String... args) {
-            initializeUsers();
-            initializeUserTokens();
+            int userCount = 10;
+            initializeUsers(userCount);
+            initializeUserTokens(userCount);
 //            saveNotifications();
             savePosts(1L);
             savePosts(2L);
@@ -49,16 +50,18 @@ public class DataLoader implements CommandLineRunner {
             saveChatRooms();
         }
     
-        private void initializeUsers() {
-            List<String> emails = List.of("homeyoyyya@gmail.com", "2@gmail.com", "3@gmail.com", "4@gmail.com");
+        private void initializeUsers(int userCount) {
+            List<String> emails = new ArrayList<>();
+            for(int i=1; i<=userCount; i++){
+                emails.add(i+"@gmail.com");
+            }
             emails.forEach(this::saveUser);
         }
     
-        private void initializeUserTokens() {
-            List<Long> userIds = List.of(1L, 2L, 3L);
-            List<String> tokens = List.of("testToken1", "testToken2", "testToken3");
-            for (int i = 0; i < userIds.size(); i++) {
-                saveUserToken(userIds.get(i), tokens.get(i));
+        private void initializeUserTokens(int userCount) {
+
+            for (long i = 1; i <= userCount; i++) {
+                saveUserToken(i, "testToken"+i);
             }
         }
     
@@ -143,7 +146,11 @@ public class DataLoader implements CommandLineRunner {
     
         private void saveChatRooms() {
             User creator = userService.getUserById(1L);
-            chatRoomService.createRoom("test", List.of(2L, 3L), creator);
+            List<Long> parties = new ArrayList<>();
+            for(long i=1; i<=100; i++){
+                parties.add(i);
+            }
+            chatRoomService.createRoom("test", parties, creator);
 //            chatService.saveMessage(1L, "test", 1L);
 //            chatService.saveMessage(2L, "test", 1L);
 //            chatService.saveMessage(3L, "test", 1L);

@@ -1,4 +1,4 @@
-package com.sns.project.controller.chat.dto.response;
+package com.sns.project.chat.dto.response;
 
 import com.sns.project.domain.chat.ChatParticipant;
 import com.sns.project.domain.chat.ChatRoom;

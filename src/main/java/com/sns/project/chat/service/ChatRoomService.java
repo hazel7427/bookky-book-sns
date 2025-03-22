@@ -1,4 +1,4 @@
-package com.sns.project.service.chat;
+package com.sns.project.chat.service;
 
 import com.sns.project.config.constants.RedisKeys;
 import com.sns.project.domain.chat.ChatParticipant;
@@ -17,10 +17,9 @@ import java.util.stream.Collectors;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.chat.ChatRoomType;
 import com.sns.project.repository.chat.ChatRoomRepository;
-import com.sns.project.service.redis.StringRedisService;
 import com.sns.project.service.user.UserService;
 import com.sns.project.domain.user.User;
-import com.sns.project.controller.chat.dto.response.ChatRoomResponse;
+import com.sns.project.chat.dto.response.ChatRoomResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +28,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final UserService userService;
-    @Qualifier("chatRedisTemplate")  // 변경된 빈 이름 지정
-    private final StringRedisService stringRedisService;
+    private final ChatRedisService stringRedisService;
     @Transactional
     public ChatRoomResponse createRoom(String name, List<Long> participantIds, User creator) {
         if (participantIds.size() == 0) {

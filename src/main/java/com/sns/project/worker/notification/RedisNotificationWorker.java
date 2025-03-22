@@ -27,7 +27,7 @@ public class RedisNotificationWorker {
     private final RedisService redisService;
     private final NotificationRepository notificationRepository;
     private final NotificationCrudService notificationCrudService;
-    private final SimpMessagingTemplate messagingTemplate; // ✅ Inject WebSocket Template
+//    private final SimpMessagingTemplate messagingTemplate; // ✅ Inject WebSocket Template
 
     public void enqueue(BatchProcessedNotificationDto batchDto) {
         String key = RedisKeys.Notification.QUEUE_KEY.get();
@@ -70,7 +70,7 @@ public class RedisNotificationWorker {
         for (Notification notification : notifications) {
             String destination = "/topic/notifications/" + notification.getReceiver().getId();
             ResponseNotificationDto responseDto = new ResponseNotificationDto(notification);
-            messagingTemplate.convertAndSend(destination, responseDto);
+//            messagingTemplate.convertAndSend(destination, responseDto);
         }
 
         log.info("Sent WebSocket notifications to {} recipients", notifications.size());

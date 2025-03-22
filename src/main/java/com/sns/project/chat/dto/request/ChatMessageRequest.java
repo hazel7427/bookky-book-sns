@@ -1,4 +1,4 @@
-package com.sns.project.controller.chat.dto.request;
+package com.sns.project.chat.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

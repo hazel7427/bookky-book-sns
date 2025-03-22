@@ -1,22 +1,19 @@
-package com.sns.project.controller.chat;
+package com.sns.project.chat.controller;
 
 import com.sns.project.aspect.AuthRequired;
 import com.sns.project.aspect.UserContext;
 import com.sns.project.domain.user.User;
-import com.sns.project.controller.chat.dto.request.ChatRoomRequest;
-import com.sns.project.controller.chat.dto.response.AllChatRoomResponse;
-import com.sns.project.controller.chat.dto.response.ChatHistoryResponse;
-import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
-import com.sns.project.controller.chat.dto.response.ChatRoomResponse;
+import com.sns.project.chat.dto.request.ChatRoomRequest;
+import com.sns.project.chat.dto.response.AllChatRoomResponse;
+import com.sns.project.chat.dto.response.ChatHistoryResponse;
+import com.sns.project.chat.dto.response.ChatRoomResponse;
 import com.sns.project.handler.exceptionHandler.response.ApiResult;
-import com.sns.project.service.chat.ChatReadService;
-import com.sns.project.service.chat.ChatRoomService;
-import com.sns.project.service.chat.ChatService;
+import com.sns.project.chat.service.ChatReadService;
+import com.sns.project.chat.service.ChatRoomService;
+import com.sns.project.chat.service.ChatService;
 import com.sns.project.service.user.UserService;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 

@@ -1,15 +1,24 @@
 package com.sns.project.service.chat;
 
+import com.sns.project.chat.service.ChatRedisService;
+import com.sns.project.config.TestRedisConfig;
+import com.sns.project.chat.service.ChatPresenceService;
+import com.sns.project.chat.service.ChatReadService;
+import com.sns.project.chat.service.ChatRoomService;
+import com.sns.project.chat.service.ChatService;
 import com.sns.project.config.constants.RedisKeys.Chat;
 import com.sns.project.domain.chat.ChatParticipant;
 import com.sns.project.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +27,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.sns.project.DataLoader;
 import com.sns.project.config.constants.RedisKeys;
-import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
+import com.sns.project.chat.dto.response.ChatMessageResponse;
 import com.sns.project.controller.user.dto.request.RequestRegisterDto;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.user.User;
 import com.sns.project.repository.chat.ChatParticipantRepository;
 import com.sns.project.repository.chat.ChatRoomRepository;
 import com.sns.project.service.RedisLuaService;
-import com.sns.project.service.redis.StringRedisService;
 import com.sns.project.service.user.UserService;
 
 import java.util.concurrent.CountDownLatch;
@@ -38,8 +46,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 @ActiveProfiles("test")
 @Transactional
+@Import(TestRedisConfig.class)  // ✅ Redis 설정 강제 적
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD) // ✅ 추가
 class ChatServiceIntegrationTest {
+
+    @Autowired
+    private Environment environment;
+
+
+    @Test
+    void checkActiveProfiles() {
+        System.out.println(">>> Active Profiles: " + Arrays.toString(environment.getActiveProfiles()));
+        // ...
+    }
+
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private LettuceConnectionFactory redisConnectionFactory;
+
+    @Test
+    void checkRedisConnection() {
+        String redisHost = env.getProperty("spring.redis.host");
+        String redisPort = env.getProperty("spring.redis.port");
+
+        System.out.println("✅ 현재 Redis 설정: " + redisHost + ":" + redisPort);
+
+        System.out.println("✅ Lettuce Redis 설정 확인:");
+        System.out.println("  - Redis Host: " + redisConnectionFactory.getHostName());
+        System.out.println("  - Redis Port: " + redisConnectionFactory.getPort());
+
+    }
+
 
     @MockBean
     private DataLoader dataLoader;
@@ -49,7 +88,7 @@ class ChatServiceIntegrationTest {
     @Autowired
     private ChatReadService chatReadService;
     @Autowired
-    private StringRedisService stringRedisService;
+    private ChatRedisService stringRedisService;
     @Autowired
     private ChatPresenceService chatPresenceService;
     @Autowired
@@ -281,7 +320,7 @@ class ChatServiceIntegrationTest {
     }
 
 
-    @AfterEach
+    @BeforeEach
     void tearDown() {
         // 테스트 후 테스트 데이터 정리
         stringRedisService.deletePattern("*");

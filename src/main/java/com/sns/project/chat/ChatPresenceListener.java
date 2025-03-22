@@ -1,11 +1,11 @@
-package com.sns.project.eventListener;
+package com.sns.project.chat;
 
 import org.springframework.stereotype.Component;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
-import com.sns.project.service.chat.ChatPresenceService;
+import com.sns.project.chat.service.ChatPresenceService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

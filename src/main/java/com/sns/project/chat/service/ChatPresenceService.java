@@ -1,16 +1,15 @@
-package com.sns.project.service.chat;
+package com.sns.project.chat.service;
 
 import com.sns.project.config.constants.RedisKeys.Chat;
 import org.springframework.stereotype.Service;
 
-import com.sns.project.service.redis.StringRedisService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ChatPresenceService {
-    private final StringRedisService stringRedisService;
+    private final ChatRedisService stringRedisService;
 
     // 사용자가 채팅방에 들어오면 Redis에 저장
     public void userEnteredRoom(Long roomId, Long userId) {

@@ -1,12 +1,9 @@
-package com.sns.project.service.chat;
+package com.sns.project.chat.service;
 
 
 import com.sns.project.config.constants.RedisKeys.Chat;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -17,13 +14,11 @@ import com.sns.project.domain.chat.ChatMessage;
 import com.sns.project.domain.chat.ChatRoom;
 import com.sns.project.domain.user.User;
 import com.sns.project.handler.exceptionHandler.exception.notfound.ChatRoomNotFoundException;
-import com.sns.project.controller.chat.dto.response.ChatMessageResponse;
+import com.sns.project.chat.dto.response.ChatMessageResponse;
 import com.sns.project.repository.chat.ChatMessageRepository;
 import com.sns.project.repository.chat.ChatRoomRepository;
 import com.sns.project.repository.chat.ChatParticipantRepository;
 import com.sns.project.service.RedisLuaService;
-import com.sns.project.service.RedisService;
-import com.sns.project.service.redis.StringRedisService;
 import com.sns.project.service.user.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,9 +36,8 @@ public class ChatService {
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatReadService chatReadService;
     private final RedisLuaService redisLuaService;
-    @Qualifier("chatRedisTemplate")  // 변경된 빈 이름 지정
- 
-    private final StringRedisService stringRedisService;
+
+    private final ChatRedisService stringRedisService;
 
 
     @Transactional
@@ -68,9 +62,9 @@ public class ChatService {
             senderId.toString()
         );
 
-        System.out.println("OMGOMG" + unreadCount);
-        System.out.println(stringRedisService.getSetMembers(Chat.CHAT_ROOM_PARTICIPANTS_SET_KEY.getParticipants(roomId)));
-        System.out.println(stringRedisService.getSetMembers(Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(roomId)));
+//        System.out.println("OMGOMG" + unreadCount);
+//        System.out.println(stringRedisService.getSetMembers(Chat.CHAT_ROOM_PARTICIPANTS_SET_KEY.getParticipants(roomId)));
+//        System.out.println(stringRedisService.getSetMembers(Chat.CONNECTED_USERS_SET_KEY.getConnectedKey(roomId)));
 
         return new ChatMessageResponse(savedMessage, unreadCount);
     }
